@@ -1,0 +1,34 @@
+name: freg-mq-metrics
+image: "docker.adeo.no:5000/freg/freg-mq-metrics"
+replicas:
+  min: 1
+  max: 1
+  cpuThresholdPercentage: 80
+port: 8080
+healthcheck:
+  liveness:
+    path: actuator/prometheus
+    initialDelay: 20
+    periodSeconds: 2
+    failureThreshold: 140
+  readiness:
+    path: actuator/prometheus
+    initialDelay: 20
+    periodSeconds: 2
+    failureThreshold: 140
+prometheus:
+  enabled: true
+  path: actuator/prometheus
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 300m
+    memory: 256Mi
+fasitResources:
+  used:
+  - alias: "person-tps-mottak_channel"
+    resourceType: channel
+  - alias: "person-tps-mottak_TPSDISTRIBUSJON"
+    resourceType: queue
