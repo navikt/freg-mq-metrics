@@ -22,6 +22,7 @@
         <application.name>freg-mq-metrics</application.name>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <sonar.exclusions>**</sonar.exclusions>
         <logstash.logback.encoder.version>4.11</logstash.logback.encoder.version>
         <java.version>1.8</java.version>
         <jms.version>2.0.1</jms.version>
