@@ -28,7 +28,5 @@ resources:
     memory: 256Mi
 fasitResources:
   used:
-  - alias: "person-tps-mottak_channel"
+  - alias: "freg-mq-metrics_channel"
     resourceType: channel
-  - alias: "person-tps-mottak_TPSDISTRIBUSJON"
-    resourceType: queue
