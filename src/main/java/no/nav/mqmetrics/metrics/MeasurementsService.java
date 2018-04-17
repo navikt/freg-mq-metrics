@@ -4,6 +4,7 @@ import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,7 +56,9 @@ public class MeasurementsService {
                                 tags(
                                         nameTag(key),
                                         channelNameTag(mqProperties.getManager().getChannelName()),
-                                        queueManagerTag(getQueueManager(mqProperties.getManager()))))
+                                        queueManagerTag(getQueueManager(mqProperties.getManager())),
+                                        environmentTag(key)
+                                ))
                         .register(registry);
                 this.queueDepths.put(key, (value));
 
@@ -64,6 +67,10 @@ public class MeasurementsService {
             }
         });
 
+    }
+
+    public static Tag environmentTag(String key) {
+        return Tag.of("environment", QueueEnvironmentUtils.stripQueueEnvironment(key));
     }
 
     private String getQueueManager(MqProperties.Jms manager) {
