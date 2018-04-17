@@ -3,7 +3,6 @@ applicationPipeline {
     javaVersion = "1.8"
     deployEnvironmentU = "u1"
     deployEnvironmentT = "t0"
-    deployEnvironmentQ = "q0"
     hasPerformanceTest = false
     hasSmoketests = false
 }
