@@ -30,5 +30,5 @@ fasitResources:
   used:
   - alias: "freg-mq-metrics_channel"
     resourceType: channel
-  - alias: "freg-mq-metrics_gateway01_channel"
+  - alias: "freg-mq-metrics_gw01_channel"
     resourceType: channel
