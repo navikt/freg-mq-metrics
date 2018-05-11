@@ -3,11 +3,11 @@ package no.nav.mqmetrics.metrics;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.net.URI;
+import java.util.List;
 
 @ConfigurationProperties(prefix = "mqmetrics.jms")
 @Setter
@@ -15,14 +15,26 @@ import java.net.URI;
 public class MqProperties {
 
     @NotNull
-    private Jms manager;
+    private List<Jms> manager;
 
     @Setter
-    @Getter
     public static class Jms {
         @NotNull
         private URI uri;
         @NotBlank
+        @Getter
         private String channelName;
+
+        public String getQueueManagerName() {
+            return this.uri.getPath().replace("/", "");
+        }
+
+        public int getQueueManagerPort() {
+            return this.uri.getPort();
+        }
+
+        public String getQueueManagerHost() {
+            return this.uri.getHost();
+        }
     }
 }

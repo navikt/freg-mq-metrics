@@ -1,7 +1,10 @@
 package no.nav.mqmetrics.metrics;
 
+import lombok.experimental.UtilityClass;
+
 import java.util.Arrays;
 
+@UtilityClass
 public class QueueEnvironmentUtils {
     public static String stripQueueEnvironment(String input) {
         String first = input.replaceFirst("QA.", "");

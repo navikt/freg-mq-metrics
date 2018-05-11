@@ -22,11 +22,13 @@ prometheus:
 resources:
   requests:
     cpu: 100m
-    memory: 256Mi
+    memory: 384Mi
   limits:
     cpu: 300m
     memory: 512Mi
 fasitResources:
   used:
   - alias: "freg-mq-metrics_channel"
+    resourceType: channel
+  - alias: "freg-mq-metrics_gateway01_channel"
     resourceType: channel

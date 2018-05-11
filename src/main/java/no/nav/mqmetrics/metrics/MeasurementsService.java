@@ -34,7 +34,14 @@ public class MeasurementsService {
     private MeterRegistry registry;
 
     public void updateMeasurements() {
-        Map<String, AtomicInteger> queueDepths = prober.getQueueDepths(mqProperties.getManager())
+        for (MqProperties.Jms manager : mqProperties.getManager()) {
+            updateFor(manager);
+        }
+    }
+
+    public void updateFor(MqProperties.Jms manager) {
+        log.info("Querying manager {}",  manager.getQueueManagerName());
+        Map<String, AtomicInteger> queueDepths = prober.getQueueDepths(manager)
                 .entrySet().stream()
                 .filter(e -> 0 <= e.getValue())
                 .collect(toMap(Entry::getKey, e -> new AtomicInteger(e.getValue())));
@@ -55,8 +62,8 @@ public class MeasurementsService {
                         .tags(
                                 tags(
                                         nameTag(key),
-                                        channelNameTag(mqProperties.getManager().getChannelName()),
-                                        queueManagerTag(getQueueManager(mqProperties.getManager())),
+                                        channelNameTag(manager.getChannelName()),
+                                        queueManagerTag(manager.getQueueManagerName()),
                                         environmentTag(key)
                                 ))
                         .register(registry);
@@ -66,15 +73,10 @@ public class MeasurementsService {
                 log.warn("Something went wrong trying to update depth of queue '" + key + "'.", e);
             }
         });
-
     }
 
     public static Tag environmentTag(String key) {
         return Tag.of("environment", QueueEnvironmentUtils.stripQueueEnvironment(key));
-    }
-
-    private String getQueueManager(MqProperties.Jms manager) {
-        return manager.getUri().getPath().replace("/", "");
     }
 
 

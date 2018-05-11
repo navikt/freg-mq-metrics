@@ -25,10 +25,9 @@ public class QueueManagerConsumer {
 
     public Map<String, Integer> getQueueDepths(MqProperties.Jms jms) {
 
-        URI uri = jms.getUri();
-        final String managerName = uri.getPath().replace("/", "");
-        final int port = uri.getPort();
-        final String hostName = uri.getHost();
+        final String managerName = jms.getQueueManagerName();
+        final int port = jms.getQueueManagerPort();
+        final String hostName = jms.getQueueManagerHost();
         final String channelName = jms.getChannelName();
 
         Server server = new Server(hostName, port, channelName, managerName);
@@ -37,6 +36,7 @@ public class QueueManagerConsumer {
 
         QueueType queueType = ALIAS;
         log.info("Querying {} {} for queue depts", managerName, channelName);
+//        server.setQueues();
         List<QueueDetails> queueDetails = mqService.getQueueDetails(server, QueueType.getType(queueType), 0);
         Map<String, Integer> result = queueDetails.stream()
                 .filter(d -> 0 <= d.getDepth())//Negative depths are not accessible, skips them.
@@ -44,6 +44,4 @@ public class QueueManagerConsumer {
         log.debug("Found {} queuedepths", result.size());
         return result;
     }
-
-
 }
