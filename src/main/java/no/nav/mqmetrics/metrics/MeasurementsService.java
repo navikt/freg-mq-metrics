@@ -6,12 +6,12 @@ import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.mqmetrics.metrics.MqProperties.MqChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.stream.Collectors.toMap;
@@ -19,12 +19,13 @@ import static no.nav.mqmetrics.metrics.MetricsUtils.channelNameTag;
 import static no.nav.mqmetrics.metrics.MetricsUtils.nameTag;
 import static no.nav.mqmetrics.metrics.MetricsUtils.queueManagerTag;
 import static no.nav.mqmetrics.metrics.MetricsUtils.tags;
+import static no.nav.mqmetrics.metrics.QueueEnvironmentUtils.stripEnvironmentNameFrom;
 
 @Slf4j
 @Service
 public class MeasurementsService {
     //consider concurrent access
-    private Map<String, AtomicInteger> queueDepths = new HashMap<>();
+    private Map<QueueAndManager, AtomicInteger> queueDepths = new HashMap<>();
 
     @Autowired
     private MqProperties mqProperties;
@@ -34,47 +35,61 @@ public class MeasurementsService {
     private MeterRegistry registry;
 
     public void updateMeasurements() {
-        Map<String, AtomicInteger> queueDepths = prober.getQueueDepths(mqProperties.getManager())
-                .entrySet().stream()
-                .filter(e -> 0 <= e.getValue())
-                .collect(toMap(Entry::getKey, e -> new AtomicInteger(e.getValue())));
+        for (MqChannel channel : mqProperties.getChannels()) {
+            updateFor(channel);
+        }
+    }
 
-        MapDifference<String, AtomicInteger> difference = Maps.difference(this.queueDepths, queueDepths);
-        Map<String, AtomicInteger> newQueues = difference.entriesOnlyOnRight();
-        Map<String, AtomicInteger> missingQueues = difference.entriesOnlyOnLeft();
+    public void updateFor(MqChannel channel) {
+        String queueManagerName = channel.getQueueManagerName();
+        log.info("Querying manager {}", queueManagerName);
+        Map<QueueAndManager, AtomicInteger> newQueueDepths = mapToQueueAndManagerMap(queueManagerName, prober.getQueueDepths(channel));
+
+        MapDifference<QueueAndManager, AtomicInteger> difference = Maps.difference(getCachedQueuesForManager(queueManagerName), newQueueDepths);
+        Map<QueueAndManager, AtomicInteger> newQueues = difference.entriesOnlyOnRight();
+        Map<QueueAndManager, AtomicInteger> missingQueues = difference.entriesOnlyOnLeft();
         // AtomicIntegers are never equal so here we get all objects not new or removed.
-        Map<String, MapDifference.ValueDifference<AtomicInteger>> updatedQueues = difference.entriesDiffering();
+        Map<QueueAndManager, MapDifference.ValueDifference<AtomicInteger>> updatedQueues = difference.entriesDiffering();
         log.info("Updated queues {}, New queues {}, missing/removed {}", updatedQueues.size(), newQueues.size(), missingQueues.size());
 
-        updatedQueues.forEach((k, diff) -> diff.leftValue().set(diff.rightValue().intValue()));
-        missingQueues.forEach((key, value) -> value.set(-1));
-        newQueues.forEach((key, value) -> {
+        updatedQueues.forEach((queueAndManager, diff) -> diff.leftValue().set(diff.rightValue().intValue()));
+        missingQueues.forEach((queueAndManager, value) -> value.set(-1));
+        newQueues.forEach((queueAndManager, depth) -> {
             try {
-                Gauge.builder("queue.depth", (value), AtomicInteger::get)
+                Gauge.builder("queue.depth", (depth), AtomicInteger::get)
                         .baseUnit("messages")
                         .tags(
                                 tags(
-                                        nameTag(key),
-                                        channelNameTag(mqProperties.getManager().getChannelName()),
-                                        queueManagerTag(getQueueManager(mqProperties.getManager())),
-                                        environmentTag(key)
+                                        nameTag(queueAndManager.getQueue()),
+                                        channelNameTag(channel.getChannelName()),
+                                        queueManagerTag(channel.getQueueManagerName()),
+                                        environmentTag(queueAndManager.getQueue())
                                 ))
                         .register(registry);
-                this.queueDepths.put(key, (value));
+                this.queueDepths.put(queueAndManager, (depth));
 
             } catch (Exception e) {
-                log.warn("Something went wrong trying to update depth of queue '" + key + "'.", e);
+                log.warn("Something went wrong trying to update depth of queue '" + queueAndManager + "'.", e);
             }
         });
-
     }
 
-    public static Tag environmentTag(String key) {
-        return Tag.of("environment", QueueEnvironmentUtils.stripQueueEnvironment(key));
+    public Map<QueueAndManager, AtomicInteger> mapToQueueAndManagerMap(String queueManagerName, Map<String, Integer> probedDepths) {
+        return probedDepths
+                .entrySet().stream()
+                .filter(e -> 0 <= e.getValue())
+                .collect(toMap(e -> new QueueAndManager(e.getKey(), queueManagerName), e -> new AtomicInteger(e.getValue())));
     }
 
-    private String getQueueManager(MqProperties.Jms manager) {
-        return manager.getUri().getPath().replace("/", "");
+    public Map<QueueAndManager, AtomicInteger> getCachedQueuesForManager(String queueManagerName) {
+        return this.queueDepths.entrySet()
+                .stream()
+                .filter(entry -> entry.getKey().getManager().equals(queueManagerName))
+                .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    public static Tag environmentTag(String queueName) {
+        return Tag.of("environment", stripEnvironmentNameFrom(queueName));
     }
 
 

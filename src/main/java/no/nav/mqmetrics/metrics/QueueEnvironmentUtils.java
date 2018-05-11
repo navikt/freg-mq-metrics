@@ -1,9 +1,12 @@
 package no.nav.mqmetrics.metrics;
 
+import lombok.experimental.UtilityClass;
+
 import java.util.Arrays;
 
+@UtilityClass
 public class QueueEnvironmentUtils {
-    public static String stripQueueEnvironment(String input) {
+    public static String stripEnvironmentNameFrom(String input) {
         String first = input.replaceFirst("QA.", "");
         return Arrays.stream(first.split("_"))
                 .findFirst()

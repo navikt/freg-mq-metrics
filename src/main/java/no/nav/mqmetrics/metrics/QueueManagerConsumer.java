@@ -5,10 +5,10 @@ import no.nav.emottak.mq.MQService;
 import no.nav.emottak.mq.QueueDetails;
 import no.nav.emottak.mq.QueueType;
 import no.nav.emottak.mq.Server;
+import no.nav.mqmetrics.metrics.MqProperties.MqChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -23,13 +23,12 @@ public class QueueManagerConsumer {
     @Autowired
     private MQService mqService;
 
-    public Map<String, Integer> getQueueDepths(MqProperties.Jms jms) {
+    public Map<String, Integer> getQueueDepths(MqChannel channel) {
 
-        URI uri = jms.getUri();
-        final String managerName = uri.getPath().replace("/", "");
-        final int port = uri.getPort();
-        final String hostName = uri.getHost();
-        final String channelName = jms.getChannelName();
+        final String managerName = channel.getQueueManagerName();
+        final int port = channel.getQueueManagerPort();
+        final String hostName = channel.getQueueManagerHost();
+        final String channelName = channel.getChannelName();
 
         Server server = new Server(hostName, port, channelName, managerName);
         server.setUser("srvappserver");
@@ -37,6 +36,7 @@ public class QueueManagerConsumer {
 
         QueueType queueType = ALIAS;
         log.info("Querying {} {} for queue depts", managerName, channelName);
+
         List<QueueDetails> queueDetails = mqService.getQueueDetails(server, QueueType.getType(queueType), 0);
         Map<String, Integer> result = queueDetails.stream()
                 .filter(d -> 0 <= d.getDepth())//Negative depths are not accessible, skips them.
@@ -44,6 +44,4 @@ public class QueueManagerConsumer {
         log.debug("Found {} queuedepths", result.size());
         return result;
     }
-
-
 }

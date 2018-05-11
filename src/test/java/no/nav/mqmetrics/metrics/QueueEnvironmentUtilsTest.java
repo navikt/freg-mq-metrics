@@ -37,6 +37,6 @@ public class QueueEnvironmentUtilsTest {
 
     @Test
     public void testName() {
-        Assert.assertThat(QueueEnvironmentUtils.stripQueueEnvironment(input), is(expexted));
+        Assert.assertThat(QueueEnvironmentUtils.stripEnvironmentNameFrom(input), is(expexted));
     }
 }

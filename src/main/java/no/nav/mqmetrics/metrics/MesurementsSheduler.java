@@ -2,7 +2,6 @@ package no.nav.mqmetrics.metrics;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
-import org.aspectj.lang.annotation.After;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -10,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 
-import static java.time.Duration.ofMillis;
+import static java.time.Duration.ofSeconds;
 
 @Component
 public class MesurementsSheduler implements InitializingBean {
@@ -23,7 +22,7 @@ public class MesurementsSheduler implements InitializingBean {
 
     private Timer schedulerTimer;
 
-    @Scheduled(fixedRateString = "${MQMETRICS_SCHEDULER_DELAY:15000}")
+    @Scheduled(fixedDelayString = "${MQMETRICS_SCHEDULER_DELAY:15000}")
     public void doUpdate() {
         Timer.Sample sample = Timer.start(registry);
         measurementsService.updateMeasurements();
@@ -32,11 +31,18 @@ public class MesurementsSheduler implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        schedulerTimer  = Timer.builder("freg.mq.metrics.timed")
+        schedulerTimer = Timer.builder("freg.mq.metrics.timed")
                 .tag("operation", "updateMesurementsSheduler")
-                .publishPercentiles(.25,.50,.75,.90)
-                .maximumExpectedValue(Duration.ofSeconds(5))
-                .sla(ofMillis(1000),ofMillis(1500),ofMillis(2000),ofMillis(2500),ofMillis(3000))
+                .publishPercentiles(.25, .50, .75, .90, 1.0)
+                .maximumExpectedValue(ofSeconds(10))
+                .sla(
+                        ofSeconds(1),
+                        ofSeconds(2),
+                        ofSeconds(3),
+                        ofSeconds(4),
+                        ofSeconds(5),
+                        ofSeconds(6),
+                        ofSeconds(7))
                 .register(registry);
     }
 
