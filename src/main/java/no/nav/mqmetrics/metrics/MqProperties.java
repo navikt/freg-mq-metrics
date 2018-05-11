@@ -9,32 +9,32 @@ import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.List;
 
-@ConfigurationProperties(prefix = "mqmetrics.jms")
+@ConfigurationProperties(prefix = "mqmetrics")
 @Setter
 @Getter
 public class MqProperties {
 
     @NotNull
-    private List<Jms> manager;
+    private List<MqChannel> channels;
 
     @Setter
-    public static class Jms {
+    public static class MqChannel {
         @NotNull
-        private URI uri;
+        private URI managerUri;
         @NotBlank
         @Getter
         private String channelName;
 
         public String getQueueManagerName() {
-            return this.uri.getPath().replace("/", "");
+            return this.managerUri.getPath().replace("/", "");
         }
 
         public int getQueueManagerPort() {
-            return this.uri.getPort();
+            return this.managerUri.getPort();
         }
 
         public String getQueueManagerHost() {
-            return this.uri.getHost();
+            return this.managerUri.getHost();
         }
     }
 }
