@@ -27,6 +27,8 @@ public class QueueEnvironmentUtilsTest {
                 testCase("QA.U1_SBEH.SAKSBEHANDLING", "U1"),
                 testCase("QA.P_SBEH.SAKSBEHANDLING", "P"),
                 testCase("QA.SBEH.SAKSBEHANDLING", "UNKNOWN"),
+                testCase("QA.P460.BREV_REPLY_QUE", "P"),
+                testCase("QA.PKKC.CLUSTER.TEST.MPLSC02", "P"),
                 testCase("QA.U5_STAT.STATISTIKK_BQ", "U5")
         );
     }

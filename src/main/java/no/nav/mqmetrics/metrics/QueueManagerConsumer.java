@@ -9,11 +9,11 @@ import no.nav.mqmetrics.metrics.MqProperties.MqChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static java.util.Comparator.comparing;
 import static no.nav.emottak.mq.QueueType.ALIAS;
 
 @Slf4j
@@ -33,15 +33,22 @@ public class QueueManagerConsumer {
         Server server = new Server(hostName, port, channelName, managerName);
         server.setUser("srvappserver");
         server.setPassword("");
+        // if list of queues are empty, autodiscover is considered enabled
+        server.setQueues(channel.getQueueNames());
 
         QueueType queueType = ALIAS;
         log.info("Querying {} {} for queue depts", managerName, channelName);
+        try {
+            List<QueueDetails> queueDetails = mqService.getQueueDetails(server, QueueType.getType(queueType), 0);
+            Map<String, Integer> result = queueDetails.stream()
+                    .filter(d -> 0 <= d.getDepth())//Negative depths are not accessible, skips them.
+                    .collect(Collectors.toMap(a -> a.getQueueName().trim(), QueueDetails::getDepth));
+            log.debug("Found {} queuedepths", result.size());
+            return result;
+        } catch (no.nav.emottak.mq.MQRuntimeException e) {
+            log.warn("Not able to fetch queues from " + server, e);
+            return Collections.emptyMap();
+        }
 
-        List<QueueDetails> queueDetails = mqService.getQueueDetails(server, QueueType.getType(queueType), 0);
-        Map<String, Integer> result = queueDetails.stream()
-                .filter(d -> 0 <= d.getDepth())//Negative depths are not accessible, skips them.
-                .collect(Collectors.toMap(a -> a.getQueueName().trim(), QueueDetails::getDepth));
-        log.debug("Found {} queuedepths", result.size());
-        return result;
     }
 }
