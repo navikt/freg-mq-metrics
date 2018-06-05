@@ -9,7 +9,9 @@ import no.nav.mqmetrics.metrics.MqProperties.MqChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -33,8 +35,8 @@ public class QueueManagerConsumer {
         Server server = new Server(hostName, port, channelName, managerName);
         server.setUser("srvappserver");
         server.setPassword("");
-        // if list of queues are empty, autodiscover is considered enabled
-        server.setQueues(channel.getQueueNames());
+        // if list of queues are empty, autodiscover is considered enabled. Duplicates are removed
+        server.setQueues(new ArrayList<>(new HashSet<>(channel.getQueueNames())));
 
         QueueType queueType = ALIAS;
         log.info("Querying {} {} for queue depts", managerName, channelName);
