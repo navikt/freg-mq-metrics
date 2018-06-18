@@ -5,7 +5,7 @@
 
     <groupId>no.nav</groupId>
     <artifactId>freg-mq-metrics</artifactId>
-    <version>0.6.2-SNAPSHOT</version>
+    <version>0.6.2</version>
     <packaging>jar</packaging>
 
     <name>freg-mq-metrics</name>
