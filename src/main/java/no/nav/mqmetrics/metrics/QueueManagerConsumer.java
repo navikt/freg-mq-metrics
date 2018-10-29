@@ -39,7 +39,7 @@ public class QueueManagerConsumer {
         server.setQueues(new ArrayList<>(new HashSet<>(channel.getQueueNames())));
 
         QueueType queueType = ALIAS;
-        log.info("Querying {} {} for queue depts", managerName, channelName);
+        log.debug("Querying {} {} for queue depts", managerName, channelName);
         try {
             List<QueueDetails> queueDetails = mqService.getQueueDetails(server, QueueType.getType(queueType), 0);
             Map<String, Integer> result = queueDetails.stream()

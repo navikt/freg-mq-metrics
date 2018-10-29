@@ -42,7 +42,7 @@ public class MeasurementsService {
 
     public void updateFor(MqChannel channel) {
         String queueManagerName = channel.getQueueManagerName();
-        log.info("Querying manager {}", queueManagerName);
+        log.debug("Querying manager {}", queueManagerName);
         Map<QueueAndManager, AtomicInteger> newQueueDepths = mapToQueueAndManagerMap(queueManagerName, prober.getQueueDepths(channel));
 
         MapDifference<QueueAndManager, AtomicInteger> difference = Maps.difference(getCachedQueuesForManager(queueManagerName), newQueueDepths);
@@ -50,7 +50,7 @@ public class MeasurementsService {
         Map<QueueAndManager, AtomicInteger> missingQueues = difference.entriesOnlyOnLeft();
         // AtomicIntegers are never equal so here we get all objects not new or removed.
         Map<QueueAndManager, MapDifference.ValueDifference<AtomicInteger>> updatedQueues = difference.entriesDiffering();
-        log.info("Updated queues {}, New queues {}, missing/removed {}", updatedQueues.size(), newQueues.size(), missingQueues.size());
+        log.debug("Updated queues {}, New queues {}, missing/removed {}", updatedQueues.size(), newQueues.size(), missingQueues.size());
 
         updatedQueues.forEach((queueAndManager, diff) -> diff.leftValue().set(diff.rightValue().intValue()));
         missingQueues.forEach((queueAndManager, value) -> value.set(-1));
