@@ -1,5 +1,5 @@
 name: freg-mq-metrics
-image: "docker.adeo.no:5000/freg/freg-mq-metrics"
+image: "docker.adeo.no:5000/registre/freg-mq-metrics"
 team: registre
 replicas:
   min: 1
