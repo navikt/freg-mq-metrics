@@ -17,7 +17,7 @@ public class MetricsUtils {
         return asList(tags);
     }
 
-    public static Tag channelNameTag(@NotBlank String channelName) {
+    public static Tag channelNameTag(String channelName) {
         return Tag.of("channel", channelName);
     }
 
