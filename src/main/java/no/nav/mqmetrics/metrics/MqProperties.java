@@ -6,14 +6,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 
 @Getter
 @ConfigurationProperties(prefix = "mqmetrics")
 public class MqProperties {
-    private final List<MqChannel> channels = new ArrayList<>();
+    private final Map<String, MqChannel> channels = new HashMap<>();
 
     @Data
     public static class MqChannel {

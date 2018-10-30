@@ -35,7 +35,7 @@ public class MeasurementsService {
     private MeterRegistry registry;
 
     public void updateMeasurements() {
-        for (MqChannel channel : mqProperties.getChannels()) {
+        for (MqChannel channel : mqProperties.getChannels().values()) {
             updateFor(channel);
         }
     }
