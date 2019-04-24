@@ -4,6 +4,6 @@ agileApplicationPipeline {
     hasIntegrationTests = false
     hasPerformanceTest = false
     hasSmoketests = false
-    environment = "Q11"
+    environment = "Q2"
     isWhitelisted = true
 }
