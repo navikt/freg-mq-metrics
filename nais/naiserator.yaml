@@ -18,7 +18,9 @@ spec:
     - name: FREG_MQ_METRICS_CHANNEL_NAME
       value: {{ FREG_MQ_METRICS_CHANNEL_NAME }}
     - name: FREG_MQ_METRICS_CHANNEL_QUEUE_NAMES
-      value: {{ FREG_MQ_METRICS_CHANNEL_QUEUE_NAMES }}
+      value: {{#each FREG_MQ_METRICS_CHANNEL_QUEUE_NAMES}}
+                - {{this }}
+               {{/each}}
   image: {{ image }}
   ingresses:
     - {{ INGRESSES }}
