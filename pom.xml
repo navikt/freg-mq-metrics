@@ -158,6 +158,7 @@
                         </goals>
                         <configuration>
                             <finalName>${application.name}</finalName>
+                            <classifier>exec</classifier>
                         </configuration>
                     </execution>
                 </executions>

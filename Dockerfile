@@ -1,6 +1,6 @@
 FROM navikt/java:8
 
-ADD "target/freg-mq-metrics.jar" /app/app.jar
+ADD "target/freg-mq-metrics-exec.jar" /app/app.jar
 
 COPY export-vault-secrets.sh /init-scripts/10-export-vault-secrets.sh
 
