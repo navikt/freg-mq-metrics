@@ -1,5 +1,5 @@
 naiseratorPipeline {
     applicationName = "freg-mq-metrics"
     dockerfileDir = "."
-    deployEnvironmentQ = "q2"
+    deployEnvironmentQ = "q1"
 }
