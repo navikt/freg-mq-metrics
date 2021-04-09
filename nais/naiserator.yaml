@@ -54,4 +54,4 @@ spec:
       - kvPath: {{ SRVFREGMQMETRICS }}
         mountPath: "/secrets/serviceuser/srvfregmqmetrics"
       - kvPath: {{ SRVMQINQUIRE }}
-        mountPath: "/secrets/mqadmin/srvmqinquire"
+        mountPath: "/secrets/serviceuser/srvmqinquire"
