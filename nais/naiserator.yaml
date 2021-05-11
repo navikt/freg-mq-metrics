@@ -55,3 +55,5 @@ spec:
         mountPath: "/secrets/serviceuser/srvfregmqmetrics"
       - kvPath: {{ SRVMQINQUIRE }}
         mountPath: "/secrets/serviceuser/srvmqinquire"
+      - kvPath: {{ FREGMQMETRICS_VAULT }}
+        mountPath: "/var/run/secrets/nais.io/vault"

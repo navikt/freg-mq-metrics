@@ -7,6 +7,7 @@ import no.nav.emottak.mq.QueueDetails;
 import no.nav.emottak.mq.QueueType;
 import no.nav.emottak.mq.Server;
 import no.nav.mqmetrics.config.MqAdminProperties;
+import no.nav.mqmetrics.config.SecureMQManagerProperties;
 import no.nav.mqmetrics.metrics.MqProperties.MqChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -30,6 +31,9 @@ public class QueueManagerConsumer {
     @Autowired
     private MqAdminProperties mqAdminProperties;
 
+    @Autowired
+    private SecureMQManagerProperties secureMQ;
+
 
     public Map<String, Integer> getQueueDepths(MqChannel channel) {
 
@@ -41,7 +45,7 @@ public class QueueManagerConsumer {
         Server server = new Server(hostName, port, channelName, managerName);
         server.setUser("srvappserver");
         server.setPassword("");
-        Server secureServer = new Server(hostName, port, channelName, managerName);
+        Server secureServer = new Server(secureMQ.getHostname(), secureMQ.getPort(), secureMQ.getChannelName(), secureMQ.getName());
         secureServer.setUser(mqAdminProperties.getUsername());
         secureServer.setPassword(mqAdminProperties.getPassword());
         // if list of queues are empty, autodiscover is considered enabled. Duplicates are removed
