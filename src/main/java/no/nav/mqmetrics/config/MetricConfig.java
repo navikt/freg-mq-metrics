@@ -10,6 +10,6 @@ public class MetricConfig {
 
     @Bean
     MeterRegistryCustomizer<MeterRegistry> commonTags() {
-        return registry -> registry.config().commonTags("team", "dokumentløsninger");
+        return registry -> registry.config().commonTags("team", "teamdokumenthandtering");
     }
 }
