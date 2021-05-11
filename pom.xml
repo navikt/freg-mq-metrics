@@ -26,7 +26,7 @@
         <mq.version>7.0</mq.version>
         <nav.emottak.version>6.14.0</nav.emottak.version>
         <javax.connector.version>1.0</javax.connector.version>
-        <junit.version>4.13</junit.version>
+        <junit.version>4.13.1</junit.version>
     </properties>
 
     <dependencies>
