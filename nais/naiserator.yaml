@@ -19,10 +19,6 @@ spec:
       value: {{ FREG_MQ_METRICS_GW04_CHANNEL_QUEUEMANAGER }}
     - name: FREG_MQ_METRICS_GW04_CHANNEL_NAME
       value: {{ FREG_MQ_METRICS_GW04_CHANNEL_NAME }}
-    - name: FREG_MQ_METRICS_SECURE_CHANNEL_QUEUEMANAGER
-      value: {{ FREG_MQ_METRICS_SECURE_CHANNEL_QUEUEMANAGER }}
-    - name: FREG_MQ_METRICS_SECURE_CHANNEL_NAME
-      value: {{ FREG_MQ_METRICS_SECURE_CHANNEL_NAME }}
   image: {{ image }}
   ingresses:
     - {{ INGRESSES }}
@@ -57,5 +53,3 @@ spec:
     paths:
       - kvPath: {{ SRVFREGMQMETRICS }}
         mountPath: "/secrets/serviceuser/srvfregmqmetrics"
-      - kvPath: {{ SRVMQINQUIRE }}
-        mountPath: "/secrets/mqadmin/srvmqinquire"

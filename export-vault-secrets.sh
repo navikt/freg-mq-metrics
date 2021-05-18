@@ -10,15 +10,3 @@ then
     echo "Setting serviceuser_password"
     export  serviceuser_password=$(cat /secrets/serviceuser/srvfregmqmetrics/password)
 fi
-
-if test -f /var/run/secrets/nais.io/srvmqinquire/username;
-then
-    echo "Setting MQADMIN_USERNAME"
-    export MQADMIN_USERNAME=$(cat /var/run/secrets/nais.io/srvmqinquire/username)
-fi
-mqadmin
-if test -f /var/run/secrets/nais.io/srvmqinquire/password;
-then
-    echo "Setting MQADMIN_PASSWORD"
-    export MQADMIN_PASSWORD=$(cat /var/run/secrets/nais.io/srvmqinquire/password)
-fi
