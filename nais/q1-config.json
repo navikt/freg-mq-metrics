@@ -5,9 +5,13 @@
   "FREG_MQ_METRICS_CHANNEL_NAME": "Q0_FREG_MQ_METRICS",
   "FREG_MQ_METRICS_GW04_CHANNEL_QUEUEMANAGER": "mq://b27apvl177.preprod.local:1413/MQ1LSC04",
   "FREG_MQ_METRICS_GW04_CHANNEL_NAME" : "Q1_FREG_MQ_METR_GW4",
-  "INGRESSES": "https://freg-mq-metrics-q1.nais.preprod.local",
+  "FREG_MQ_METRICS_SECURE_QUEUEMANAGER": "mq://b27apvl219.preprod.local:1413/MQLS01",
+  "FREG_MQ_METRICS_SECURE_CHANNEL_NAME": "Q1_FREG_MQ_SECURE",
   "SRVFREGMQMETRICS": "/serviceuser/data/dev/srvfregmqmetrics",
   "SRVMQINQUIRE": "/serviceuser/data/dev/srvmqinquire",
   "FREGMQMETRICS_VAULT": "/kv/preprod/fss/freg-mq-metrics/q1",
-  "NAMESPACE": "q1"
+  "NAMESPACE": "q1",
+  "INGRESSES": [
+    "https://freg-mq-metrics-q1.nais.preprod.local"
+  ]
 }
