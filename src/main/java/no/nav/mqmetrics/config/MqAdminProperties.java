@@ -10,7 +10,8 @@ import javax.validation.constraints.NotEmpty;
 
 @Getter
 @Setter
-@ConfigurationProperties(value = "mqadmin")
+@ToString
+@ConfigurationProperties("mqadmin")
 @Validated
 public class MqAdminProperties {
 

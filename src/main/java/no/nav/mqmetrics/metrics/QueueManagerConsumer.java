@@ -1,5 +1,6 @@
 package no.nav.mqmetrics.metrics;
 
+import com.ibm.mq.MQQueueManager;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.emottak.mq.MQRuntimeException;
 import no.nav.emottak.mq.MQService;
@@ -7,7 +8,6 @@ import no.nav.emottak.mq.QueueDetails;
 import no.nav.emottak.mq.QueueType;
 import no.nav.emottak.mq.Server;
 import no.nav.mqmetrics.config.MqAdminProperties;
-import no.nav.mqmetrics.config.SecureMQManagerProperties;
 import no.nav.mqmetrics.metrics.MqProperties.MqChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,14 +25,15 @@ import static no.nav.emottak.mq.QueueType.ALIAS;
 @Component
 public class QueueManagerConsumer {
 
+    private static final String Q_SECURE_QUEUEMANAGER_NAME = "MQLS01";
+    private static final String P_SECURE_QUEUEMANAGER_NAME = "MPLS01";
+
+
     @Autowired
     private MQService mqService;
 
     @Autowired
     private MqAdminProperties mqAdminProperties;
-
-    @Autowired
-    private SecureMQManagerProperties secureMQ;
 
 
     public Map<String, Integer> getQueueDepths(MqChannel channel) {
@@ -43,27 +44,25 @@ public class QueueManagerConsumer {
         final String channelName = channel.getChannelName();
 
         Server server = new Server(hostName, port, channelName, managerName);
-        server.setUser("srvappserver");
-        server.setPassword("");
-        Server secureServer = new Server(secureMQ.getHostname(), secureMQ.getPort(), secureMQ.getChannelName(), secureMQ.getName());
-        secureServer.setUser(mqAdminProperties.getUsername());
-        secureServer.setPassword(mqAdminProperties.getPassword());
+        if(Q_SECURE_QUEUEMANAGER_NAME.equalsIgnoreCase(managerName) || P_SECURE_QUEUEMANAGER_NAME.equalsIgnoreCase(managerName)) {
+            server.setUser(mqAdminProperties.getUsername());
+            server.setPassword(mqAdminProperties.getPassword());
+        } else {
+            server.setUser("srvappserver");
+            server.setPassword("");
+        }
+
         // if list of queues are empty, autodiscover is considered enabled. Duplicates are removed
         server.setQueues(new ArrayList<>(new HashSet<>(channel.getQueueNames())));
-        secureServer.setQueues(new ArrayList<>(new HashSet<>(channel.getQueueNames())));
 
         QueueType queueType = ALIAS;
         log.debug("Querying {} {} for queue depts", managerName, channelName);
         try {
             List<QueueDetails> queueDetails = mqService.getQueueDetails(server, QueueType.getType(queueType), 0);
-            List<QueueDetails> secureQueueDetails = mqService.getQueueDetails(secureServer, QueueType.getType(queueType), 0);
             Map<String, Integer> result = queueDetails.stream()
                     .filter(d -> 0 <= d.getDepth())//Negative depths are not accessible, skips them.
                     .collect(Collectors.toMap(a -> a.getQueueName().trim(), QueueDetails::getDepth));
             log.debug("Found {} queuedepths", result.size());
-            result.putAll(secureQueueDetails.stream()
-                    .filter(d -> 0 <= d.getDepth())//Negative depths are not accessible, skips them.
-                    .collect(Collectors.toMap(a -> a.getQueueName().trim(), QueueDetails::getDepth)));
             return result;
         } catch (MQRuntimeException e) {
             log.warn("Not able to fetch queues from " + server, e);

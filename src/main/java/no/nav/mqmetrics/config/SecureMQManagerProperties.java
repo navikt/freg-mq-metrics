@@ -7,22 +7,22 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 
 @Getter
 @Setter
 @ToString
-@ConfigurationProperties("securemqmanager")
+@ConfigurationProperties("securemqgateway")
 @Validated
 public class SecureMQManagerProperties {
 
-    @NotBlank
+    @NotEmpty
     private String hostname;
-    @NotBlank
+    @NotEmpty
     private String name;
     @Min(0)
     private int port;
 
-    @NotBlank
-    private String channelName;
+    @NotEmpty
+    private String channelname;
 }
