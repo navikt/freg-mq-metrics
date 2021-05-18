@@ -1,10 +1,13 @@
 package no.nav.mqmetrics.metrics;
 
+import com.ibm.mq.MQQueueManager;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.emottak.mq.MQRuntimeException;
 import no.nav.emottak.mq.MQService;
 import no.nav.emottak.mq.QueueDetails;
 import no.nav.emottak.mq.QueueType;
 import no.nav.emottak.mq.Server;
+import no.nav.mqmetrics.config.MqAdminProperties;
 import no.nav.mqmetrics.metrics.MqProperties.MqChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,8 +25,16 @@ import static no.nav.emottak.mq.QueueType.ALIAS;
 @Component
 public class QueueManagerConsumer {
 
+    private static final String Q_SECURE_QUEUEMANAGER_NAME = "MQLS01";
+    private static final String P_SECURE_QUEUEMANAGER_NAME = "MPLS01";
+
+
     @Autowired
     private MQService mqService;
+
+    @Autowired
+    private MqAdminProperties mqAdminProperties;
+
 
     public Map<String, Integer> getQueueDepths(MqChannel channel) {
 
@@ -33,8 +44,14 @@ public class QueueManagerConsumer {
         final String channelName = channel.getChannelName();
 
         Server server = new Server(hostName, port, channelName, managerName);
-        server.setUser("srvappserver");
-        server.setPassword("");
+        if(Q_SECURE_QUEUEMANAGER_NAME.equalsIgnoreCase(managerName) || P_SECURE_QUEUEMANAGER_NAME.equalsIgnoreCase(managerName)) {
+            server.setUser(mqAdminProperties.getUsername());
+            server.setPassword(mqAdminProperties.getPassword());
+        } else {
+            server.setUser("srvappserver");
+            server.setPassword("");
+        }
+
         // if list of queues are empty, autodiscover is considered enabled. Duplicates are removed
         server.setQueues(new ArrayList<>(new HashSet<>(channel.getQueueNames())));
 
@@ -47,7 +64,7 @@ public class QueueManagerConsumer {
                     .collect(Collectors.toMap(a -> a.getQueueName().trim(), QueueDetails::getDepth));
             log.debug("Found {} queuedepths", result.size());
             return result;
-        } catch (no.nav.emottak.mq.MQRuntimeException e) {
+        } catch (MQRuntimeException e) {
             log.warn("Not able to fetch queues from " + server, e);
             return Collections.emptyMap();
         }

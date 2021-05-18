@@ -19,9 +19,15 @@ spec:
       value: {{ FREG_MQ_METRICS_GW04_CHANNEL_QUEUEMANAGER }}
     - name: FREG_MQ_METRICS_GW04_CHANNEL_NAME
       value: {{ FREG_MQ_METRICS_GW04_CHANNEL_NAME }}
+    - name: FREG_MQ_METRICS_SECURE_QUEUEMANAGER
+      value: {{ FREG_MQ_METRICS_SECURE_QUEUEMANAGER }}
+    - name: FREG_MQ_METRICS_SECURE_CHANNEL_NAME
+      value: {{ FREG_MQ_METRICS_SECURE_CHANNEL_NAME }}
   image: {{ image }}
   ingresses:
-    - {{ INGRESSES }}
+    {{#each INGRESSES}}
+       - {{this }}
+      {{/each}}
   leaderElection: true
   liveness:
     path: /internal/isalive
@@ -53,3 +59,5 @@ spec:
     paths:
       - kvPath: {{ SRVFREGMQMETRICS }}
         mountPath: "/secrets/serviceuser/srvfregmqmetrics"
+      - kvPath: {{ SRVMQINQUIRE }}
+        mountPath: "/secrets/serviceuser/srvmqinquire"
