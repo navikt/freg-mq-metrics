@@ -1,4 +1,4 @@
-FROM navikt/java:8
+FROM navikt/java:11
 
 ADD "target/freg-mq-metrics-exec.jar" /app/app.jar
 
