@@ -26,6 +26,8 @@
         <jms.version>2.0.1</jms.version>
         <mq.version>7.0</mq.version>
         <nav.emottak.version>6.14.0</nav.emottak.version>
+        <wmq.version>9.2.2.0</wmq.version>
+        <apache.version>3.12.0</apache.version>
         <javax.connector.version>1.0</javax.connector.version>
         <junit.version>4.13</junit.version>
     </properties>
@@ -82,6 +84,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
+            <version>${apache.version}</version>
         </dependency>
 
         <!--MQ Querying-->
@@ -90,48 +93,20 @@
             <artifactId>connector</artifactId>
             <version>${javax.connector.version}</version>
         </dependency>
+
         <dependency>
-            <groupId>no.nav.emottak</groupId>
-            <artifactId>nav-emottak-mq-java</artifactId>
-            <version>${nav.emottak.version}</version>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>30.1.1-jre</version>
         </dependency>
 
         <!--MQ-->
         <dependency>
-            <groupId>com.ibm</groupId>
-            <artifactId>com.ibm.mq.commonservices</artifactId>
-            <version>${mq.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.ibm</groupId>
-            <artifactId>com.ibm.mq.headers</artifactId>
-            <version>${mq.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.ibm</groupId>
-            <artifactId>com.ibm.mq</artifactId>
-            <version>${mq.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.ibm</groupId>
-            <artifactId>com.ibm.mqjms</artifactId>
-            <version>${mq.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.ibm</groupId>
-            <artifactId>dhbcore</artifactId>
-            <version>${mq.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.ibm.mq</groupId>
-            <artifactId>jmqi</artifactId>
-            <version>${mq.version}</version>
+            <artifactId>com.ibm.mq.allclient</artifactId>
+            <version>${wmq.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.ibm</groupId>
-            <artifactId>com.ibm.mq.pcf</artifactId>
-            <version>${mq.version}</version>
-        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

@@ -22,3 +22,4 @@ then
     echo "Setting MQADMIN_PASSWORD"
     export mqadmin_password=$(cat /secrets/serviceuser/srvmqinquire/password)
 fi
+
