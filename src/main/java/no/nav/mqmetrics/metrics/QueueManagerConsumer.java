@@ -5,14 +5,13 @@ import com.ibm.mq.jms.MQConnectionFactory;
 import com.ibm.msg.client.jms.JmsConstants;
 import com.ibm.msg.client.wmq.WMQConstants;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.mqmetrics.config.MqAdminProperties;
+import no.nav.mqmetrics.config.ServiceuserProperties;
 import no.nav.mqmetrics.exception.MQRuntimeException;
 import no.nav.mqmetrics.metrics.MqProperties.MqChannel;
 import no.nav.mqmetrics.service.MQService;
 import no.nav.mqmetrics.service.QueueDetails;
 import no.nav.mqmetrics.service.QueueType;
 import no.nav.mqmetrics.service.Server;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.connection.UserCredentialsConnectionFactoryAdapter;
 import org.springframework.stereotype.Component;
@@ -35,13 +34,12 @@ public class QueueManagerConsumer {
 
     private static final String Q_SECURE_QUEUEMANAGER_NAME = "MQLS01";
     private static final String P_SECURE_QUEUEMANAGER_NAME = "MPLS01";
-    private static final int UTF_8_WITH_PUA = 1208;
 
     @Autowired
     private MQService mqService;
 
     @Autowired
-    private MqAdminProperties mqAdminProperties;
+    private ServiceuserProperties serviceuserProperties;
 
 
     public Map<String, Integer> getQueueDepths(MqChannel channel) {
@@ -53,8 +51,8 @@ public class QueueManagerConsumer {
 
         Server server = new Server(hostName, port, channelName, managerName, true);
         if (Q_SECURE_QUEUEMANAGER_NAME.equalsIgnoreCase(managerName) || P_SECURE_QUEUEMANAGER_NAME.equalsIgnoreCase(managerName)) {
-            server.setUser(mqAdminProperties.getUsername());
-            server.setPassword(mqAdminProperties.getPassword());
+            server.setUser(serviceuserProperties.getUsername());
+            server.setPassword(serviceuserProperties.getPassword());
         } else {
             server.setMqcsp(false);
             server.setUser("srvappserver");
@@ -95,8 +93,8 @@ public class QueueManagerConsumer {
 
         if (server.getQueueManagerName().equalsIgnoreCase("MQLS01")) {
             // Konfigurasjon for IBM MQ broker med TLS og autorisasjon med serviceuser mot onpremise Active Directory.
-            adapter.setUsername(mqAdminProperties.getUsername());
-            adapter.setPassword(mqAdminProperties.getPassword());
+            adapter.setUsername(serviceuserProperties.getUsername());
+            adapter.setPassword(serviceuserProperties.getPassword());
         } else {
             // Legacy IBM MQ broker
             connectionFactory.setBooleanProperty(JmsConstants.USER_AUTHENTICATION_MQCSP, false);
@@ -106,19 +104,5 @@ public class QueueManagerConsumer {
         return adapter;
     }
 
-    MQConnectionFactory mqQueueConnectionFactory(Server server) throws JMSException {
-        MQConnectionFactory cf = new MQConnectionFactory();
-        cf.setHostName(server.getHost());
-        cf.setPort(server.getPort());
-        cf.setQueueManager(server.getQueueManagerName());
-        cf.setCCSID(UTF_8_WITH_PUA);
-        cf.setIntProperty(WMQConstants.JMS_IBM_ENCODING, MQConstants.MQENC_NATIVE);
-        cf.setIntProperty(WMQConstants.JMS_IBM_CHARACTER_SET, UTF_8_WITH_PUA);
-        if (StringUtils.isNotEmpty(server.getUser())) {
-            cf.setBooleanProperty(MQConstants.USE_MQCSP_AUTHENTICATION_PROPERTY, server.isMqcsp());
-            cf.setTransportType(WMQConstants.WMQ_CM_CLIENT);
-            cf.createConnection(server.getUser(), server.getPassword());
-        }
-        return cf;
-    }
+
 }

@@ -11,17 +11,13 @@ import com.ibm.mq.headers.MQDataException;
 import com.ibm.mq.headers.pcf.PCFException;
 import com.ibm.mq.headers.pcf.PCFMessage;
 import com.ibm.mq.headers.pcf.PCFMessageAgent;
-import com.ibm.mq.jms.MQConnectionFactory;
-import com.ibm.mq.jms.MQQueueConnectionFactory;
 import com.ibm.msg.client.jms.JmsConstants;
-import com.ibm.msg.client.wmq.WMQConstants;
 import lombok.SneakyThrows;
 import no.nav.mqmetrics.exception.MQRuntimeException;
 import no.nav.mqmetrics.utils.ByteUtil;
 import no.nav.mqmetrics.utils.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.http.HttpHeaders;
 
 import javax.jms.JMSException;
 import java.io.EOFException;
@@ -75,16 +71,16 @@ public class MQService {
                 list = new ArrayList();
                 i$ = server.getQueues().iterator();
 
-                while(i$.hasNext()) {
-                    String name = (String)i$.next();
-                    ((List)list).add(new QueueDetails(name, managerName, managerIndex));
+                while (i$.hasNext()) {
+                    String name = (String) i$.next();
+                    ((List) list).add(new QueueDetails(name, managerName, managerIndex));
                 }
             }
 
-            i$ = ((List)list).iterator();
+            i$ = ((List) list).iterator();
 
-            while(i$.hasNext()) {
-                QueueDetails qd = (QueueDetails)i$.next();
+            while (i$.hasNext()) {
+                QueueDetails qd = (QueueDetails) i$.next();
                 if (qd.getQueueType() != QueueType.MODEL) {
                     try {
                         MQQueue queue = queueManager.accessQueue(qd.getQueueName(), 8226);
@@ -102,7 +98,7 @@ public class MQService {
             this.closeQuietly(queueManager);
         }
 
-        return (List)list;
+        return (List) list;
     }
 
     @SuppressWarnings(
@@ -132,7 +128,7 @@ public class MQService {
     }
 
     private void addMessageDetails(MQQueue queue, List<MessageDetails> list, MQGetMessageOptions getMessageOptions) throws IOException {
-        while(true) {
+        while (true) {
             try {
                 list.add(this.getMessageDetails(queue, getMessageOptions));
             } catch (MQException var6) {
@@ -189,7 +185,7 @@ public class MQService {
             String[] arr$ = ids;
             int len$ = ids.length;
 
-            for(int i$ = 0; i$ < len$; ++i$) {
+            for (int i$ = 0; i$ < len$; ++i$) {
                 String id = arr$[i$];
                 this.deleteMessage(queue, getMessageOptions, ByteUtil.hexStringToByteArray(id));
             }
@@ -218,7 +214,7 @@ public class MQService {
             getMessageOptions.options = 8256;
             int depth = queue.getCurrentDepth();
 
-            for(int i = depth; i > 0; --i) {
+            for (int i = depth; i > 0; --i) {
                 MQMessage message = new MQMessage();
                 queue.get(message, getMessageOptions);
             }
@@ -264,7 +260,7 @@ public class MQService {
             String[] arr$ = ids;
             int len$ = ids.length;
 
-            for(int i$ = 0; i$ < len$; ++i$) {
+            for (int i$ = 0; i$ < len$; ++i$) {
                 String id = arr$[i$];
                 byte[] msgid = ByteUtil.hexStringToByteArray(id);
                 this.copyMessage(queueSource, queueDestination, getMessageOptions, putMessageOptions, msgid);
@@ -453,15 +449,15 @@ public class MQService {
         Map<String, Object> props = new HashMap();
         this.addPropertiesFromPropertyNames(message, props);
         messageDetails.setProperties(props);
-        messageDetails.setStatus((String)props.get("_exceptionMessage"));
+        messageDetails.setStatus((String) props.get("_exceptionMessage"));
         return messageDetails;
     }
 
     private void addPropertiesFromPropertyNames(MQMessage message, Map<String, Object> map) throws MQException {
         Enumeration props = message.getPropertyNames("%");
 
-        while(props.hasMoreElements()) {
-            String p = (String)props.nextElement();
+        while (props.hasMoreElements()) {
+            String p = (String) props.nextElement();
             map.put(p, message.getObjectProperty(p));
         }
 
@@ -481,7 +477,7 @@ public class MQService {
     private static String getCorrelationId(MQMessage message) {
         String corrId = (new String(message.correlationId)).trim();
 
-        for(int i = 0; i < corrId.length(); ++i) {
+        for (int i = 0; i < corrId.length(); ++i) {
             if (!StringUtil.isPrintable(corrId.charAt(i))) {
                 return "ID:" + ByteUtil.byteArrayToHexString(message.correlationId);
             }
@@ -580,11 +576,11 @@ public class MQService {
 
         try {
             PCFMessage[] responses = agent.send(request);
-            String[] names = (String[])((String[])responses[0].getParameterValue(3011));
+            String[] names = (String[]) ((String[]) responses[0].getParameterValue(3011));
             String[] arr$ = names;
             int len$ = names.length;
 
-            for(int i$ = 0; i$ < len$; ++i$) {
+            for (int i$ = 0; i$ < len$; ++i$) {
                 String name = arr$[i$];
                 QueueDetails qd = new QueueDetails(name, managerName, managerIndex);
                 qd.setQueueType(QueueType.getQueueType(type));
@@ -628,11 +624,7 @@ public class MQService {
     }
 
 
-
-
-
     private MQQueueManager getQueueManager(Server server) throws MQException, JMSException {
-        mqQueueConnectionFactory(server);
         Hashtable<String, Object> properties = new Hashtable();
         properties.put(PORT_PROPERTY, server.getPort());
         properties.put(MQConstants.HOST_NAME_PROPERTY, server.getHost());
@@ -641,28 +633,11 @@ public class MQService {
         if (StringUtils.isNotEmpty(server.getUser())) {
             properties.put(MQConstants.USE_MQCSP_AUTHENTICATION_PROPERTY, server.isMqcsp());
             properties.put(JmsConstants.USER_AUTHENTICATION_MQCSP, server.isMqcsp());
-            properties.put("XMSC_WMQ_CONNECTION_MODE", WMQConstants.WMQ_CM_CLIENT);
             properties.put(USER_ID_PROPERTY, server.getUser());
             properties.put(PASSWORD_PROPERTY, server.getPassword());
         }
 
         return new MQQueueManager(server.getQueueManagerName(), properties);
-    }
-
-    MQConnectionFactory mqQueueConnectionFactory(Server server) throws JMSException {
-        MQConnectionFactory cf = new MQConnectionFactory();
-        cf.setHostName(server.getHost());
-        cf.setPort(server.getPort());
-        cf.setQueueManager(server.getQueueManagerName());
-        cf.setCCSID(UTF_8_WITH_PUA);
-        cf.setIntProperty(WMQConstants.JMS_IBM_ENCODING, MQConstants.MQENC_NATIVE);
-        cf.setIntProperty(WMQConstants.JMS_IBM_CHARACTER_SET, UTF_8_WITH_PUA);
-        if (StringUtils.isNotEmpty(server.getUser())) {
-            cf.setBooleanProperty(MQConstants.USE_MQCSP_AUTHENTICATION_PROPERTY, server.isMqcsp());
-            cf.setTransportType(WMQConstants.WMQ_CM_CLIENT);
-            cf.createConnection(server.getUser(), server.getPassword());
-        }
-        return cf;
     }
 
 }
