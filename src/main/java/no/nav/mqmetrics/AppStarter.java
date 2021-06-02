@@ -14,6 +14,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class AppStarter {
 
     public static void main(String[] args) {
-        SpringApplication.run(AppStarter.class, args).registerShutdownHook();
+        SpringApplication.run(AppStarter.class, args);
     }
 }

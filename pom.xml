@@ -102,17 +102,10 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                        <configuration>
-                            <finalName>${application.name}</finalName>
-                            <classifier>exec</classifier>
-                        </configuration>
-                    </execution>
-                </executions>
+                <configuration>
+                    <finalName>app</finalName>
+                    <mainClass>no.nav.mqmetrics.AppStarter</mainClass>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
