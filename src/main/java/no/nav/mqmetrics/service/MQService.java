@@ -54,7 +54,8 @@ public class MQService {
             PCFMessage[] responses = agent.send(request);
 
             queueStatus = Arrays.stream(responses).filter(Objects::nonNull)
-                    .filter(pcfMessage -> !Pattern.matches("^SYSTEM.*", String.valueOf(pcfMessage.getParameterValue(MQCA_Q_NAME)).trim()))
+                    .filter(pcfMessage -> !Pattern.matches("^SYSTEM.*$", String.valueOf(pcfMessage.getParameterValue(MQCA_Q_NAME)).trim()))
+                    .filter(pcfMessage -> !Pattern.matches("^AMK.*$", String.valueOf(pcfMessage.getParameterValue(MQCA_Q_NAME)).trim()))
                     .map(pcfMessage ->
                             DokQueueStatus.builder().queueName(String.valueOf(pcfMessage.getParameterValue(MQCA_Q_NAME)).trim())
                                     .depth((Integer) pcfMessage.getParameterValue(MQIA_CURRENT_Q_DEPTH))

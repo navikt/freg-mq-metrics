@@ -2,7 +2,7 @@ package no.nav.mqmetrics.service;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jndi.JndiTemplate;
 import org.springframework.util.CollectionUtils;
 
@@ -11,8 +11,8 @@ import java.util.Collection;
 
 @Getter
 @Setter
+@Slf4j
 public class Server implements Serializable {
-    private static final Logger LOG = Logger.getLogger(Server.class);
     private static final long serialVersionUID = 6429024078737806983L;
     private static final String NOT_RESOLVED_FROM_JNDI = "NOT_RESOLVED_FROM_JNDI";
     private static final int UTF_8_WITH_PUA = 1208;

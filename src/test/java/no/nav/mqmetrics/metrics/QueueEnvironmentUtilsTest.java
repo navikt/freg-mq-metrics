@@ -1,13 +1,12 @@
 package no.nav.mqmetrics.metrics;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 
-import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
 public class QueueEnvironmentUtilsTest {
@@ -39,6 +38,6 @@ public class QueueEnvironmentUtilsTest {
 
     @Test
     public void testName() {
-        Assert.assertThat(QueueEnvironmentUtils.stripEnvironmentNameFrom(input), is(expexted));
+        assertEquals(QueueEnvironmentUtils.stripEnvironmentNameFrom(input), expexted);
     }
 }
