@@ -23,7 +23,7 @@ public class MqProperties {
         private String channelName;
         private List<String> queueNames = new ArrayList<>();
 
-        private static String ensureQueueAlias(String queueName) {
+        public static String ensureQueueAlias(String queueName) {
             if (queueName.startsWith("QA.")) return queueName;
             else return ("QA." + queueName);
         }
