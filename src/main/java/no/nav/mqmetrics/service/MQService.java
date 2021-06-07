@@ -1,13 +1,11 @@
 package no.nav.mqmetrics.service;
 
 import com.ibm.mq.MQException;
-import com.ibm.mq.MQQueue;
 import com.ibm.mq.MQQueueManager;
 import com.ibm.mq.constants.MQConstants;
 import com.ibm.mq.headers.MQDataException;
 import com.ibm.mq.headers.pcf.PCFMessage;
 import com.ibm.mq.headers.pcf.PCFMessageAgent;
-import com.ibm.msg.client.jms.JmsConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -28,6 +26,7 @@ import static com.ibm.mq.constants.CMQC.PASSWORD_PROPERTY;
 import static com.ibm.mq.constants.CMQC.PORT_PROPERTY;
 import static com.ibm.mq.constants.CMQC.USER_ID_PROPERTY;
 import static com.ibm.mq.constants.CMQCFC.MQCMD_INQUIRE_Q_STATUS;
+
 
 @Slf4j
 @Component
@@ -63,9 +62,9 @@ public class MQService {
                     ).collect(Collectors.toList());
 
         } catch (MQDataException var14) {
-            log.info("failed to autodiscover queues of type {} , Reason:{} ", type, var14.reasonCode);
+            log.info("Feilet til å hente  Køer status med type= {} , Reason={}, feilmelding={} ", type, var14.reasonCode, var14.getMessage());
         } catch (IOException | MQException e) {
-            log.info("failed to autodiscover queues of type {} , Reason:{} ", type, e.getCause());
+            log.info("Kunne ikke koble til queuemanager={} med type={}, Reason={} , feilmelding={}", server.getQueueManagerName(), type, e, e.getMessage());
         } finally {
             closeQuietly(agent);
             if (disconnect) {
@@ -105,18 +104,6 @@ public class MQService {
 
     }
 
-    private void closeQuietly(MQQueue queue) {
-        if (queue != null) {
-            try {
-                queue.close();
-            } catch (MQException var3) {
-                log.warn("MQException while closing queue", var3);
-            }
-        }
-
-    }
-
-
     private MQQueueManager getQueueManager(Server server) throws MQException {
         Hashtable<String, Object> properties = new Hashtable<>();
         properties.put(PORT_PROPERTY, server.getPort());
@@ -125,7 +112,6 @@ public class MQService {
         properties.put(MQConstants.MQPSC_Q_MGR_NAME, server.getQueueManagerName());
         if (StringUtils.isNotEmpty(server.getUser())) {
             properties.put(MQConstants.USE_MQCSP_AUTHENTICATION_PROPERTY, server.isMqcsp());
-            properties.put(JmsConstants.USER_AUTHENTICATION_MQCSP, server.isMqcsp());
             properties.put(USER_ID_PROPERTY, server.getUser());
             properties.put(PASSWORD_PROPERTY, server.getPassword());
         }

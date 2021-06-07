@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static no.nav.mqmetrics.service.QueueType.ALIAS;
-import static no.nav.mqmetrics.service.QueueType.LOCAL;
 
 
 @Slf4j
@@ -61,7 +60,7 @@ public class QueueManagerConsumer {
             List<DokQueueStatus> queueDetails = mqService.getQueueDetails(server, QueueType.getType(ALIAS), true);
             Map<String, Integer> result = queueDetails.stream()
                     .filter(d -> 0 <= d.getDepth())//Negative depths are not accessible, skips them.
-                    .collect(Collectors.toMap(DokQueueStatus::getQueueName, DokQueueStatus::getDepth));
+                    .collect(Collectors.toMap(a -> MqChannel.ensureQueueAlias(a.getQueueName()), DokQueueStatus::getDepth));
             log.debug("Found {} queuedepths", result.size());
             return result;
         } catch (MQRuntimeException e) {
