@@ -22,7 +22,7 @@ public class MesurementsSheduler implements InitializingBean {
 
     private Timer schedulerTimer;
 
-    @Scheduled(fixedDelayString = "${MQMETRICS_SCHEDULER_DELAY:15000}")
+    @Scheduled(fixedDelayString = "${MQMETRICS_SCHEDULER_DELAY:300000}")
     public void doUpdate() {
         Timer.Sample sample = Timer.start(registry);
         measurementsService.updateMeasurements();
