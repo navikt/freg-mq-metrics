@@ -1,15 +1,15 @@
 package no.nav.mqmetrics.service;
 
-import com.ibm.mq.MQQueueManager;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.ObjectUtils;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.Date;
 
 @Getter
 @Setter
+@ToString
 public class QueueDetails implements Serializable {
     private static final long serialVersionUID = 4508359994115995007L;
     private String queueName;
