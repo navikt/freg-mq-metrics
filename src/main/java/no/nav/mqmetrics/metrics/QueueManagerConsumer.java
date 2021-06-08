@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static no.nav.mqmetrics.service.QueueType.ALIAS;
-import static no.nav.mqmetrics.service.QueueType.LOCAL;
 
 
 @Slf4j
@@ -58,11 +57,13 @@ public class QueueManagerConsumer {
 
         log.debug("Querying {} {} for queue depts", managerName, channelName);
         try {
-            List<DokQueueStatus> queueDetails = mqService.getQueueDetails(server, QueueType.getType(ALIAS), true);
+
+            List<DokQueueStatus> queueDetails = !(Q_SECURE_QUEUEMANAGER_NAME.equalsIgnoreCase(managerName) || P_SECURE_QUEUEMANAGER_NAME.equalsIgnoreCase(managerName)) ?
+                    mqService.getQueueDetails(server, QueueType.getType(ALIAS), 0) : mqService.getSecureQueueDetails(server, QueueType.getType(ALIAS), true);
             Map<String, Integer> result = queueDetails.stream()
                     .filter(d -> 0 <= d.getDepth())//Negative depths are not accessible, skips them.
-                    .collect(Collectors.toMap(DokQueueStatus::getQueueName, DokQueueStatus::getDepth));
-            log.debug("Found {} queuedepths", result.size());
+                    .collect(Collectors.toMap(name -> MqChannel.ensureQueueAlias(name.getQueueName()), DokQueueStatus::getDepth));
+            log.info("Funnet {} kødybder i queuemanger={}", result.size(), server.getQueueManagerName());
             return result;
         } catch (MQRuntimeException e) {
             log.warn("Not able to fetch queues from " + server, e);

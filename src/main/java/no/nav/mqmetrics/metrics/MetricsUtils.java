@@ -3,8 +3,6 @@ package no.nav.mqmetrics.metrics;
 import io.micrometer.core.instrument.Tag;
 import lombok.experimental.UtilityClass;
 
-import javax.validation.constraints.NotBlank;
-
 import static java.util.Arrays.asList;
 
 @UtilityClass
