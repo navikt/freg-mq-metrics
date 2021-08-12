@@ -9,7 +9,7 @@
   "FREG_MQ_METRICS_SECURE_CHANNEL_NAME": "P_FREG_MQ_SECURE",
   "SRVFREGMQMETRICS": "/serviceuser/data/prod/srvfregmqmetrics",
   "SRVMQINQUIRE": "/serviceuser/data/prod/srvmqinquire",
-  "NAMESPACE": "default",
+  "NAMESPACE": "teamdokumenthandtering",
   "INGRESSES": [
     "https://freg-mq-metrics.nais.adeo.no"
   ]
