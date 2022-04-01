@@ -25,7 +25,7 @@ import static no.nav.mqmetrics.metrics.QueueEnvironmentUtils.stripEnvironmentNam
 @Service
 public class MeasurementsService {
     //consider concurrent access
-    private Map<QueueAndManager, AtomicInteger> queueDepths = new HashMap<>();
+    private final Map<QueueAndManager, AtomicInteger> queueDepths = new HashMap<>();
 
     @Autowired
     private MqProperties mqProperties;

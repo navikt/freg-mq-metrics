@@ -4,8 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jndi.JndiTemplate;
-import org.springframework.util.CollectionUtils;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
 
@@ -13,6 +13,7 @@ import java.util.Collection;
 @Setter
 @Slf4j
 public class Server implements Serializable {
+    @Serial
     private static final long serialVersionUID = 6429024078737806983L;
     private static final String NOT_RESOLVED_FROM_JNDI = "NOT_RESOLVED_FROM_JNDI";
     private static final int UTF_8_WITH_PUA = 1208;
@@ -31,12 +32,6 @@ public class Server implements Serializable {
     private transient String aliasPrefix;
     private boolean mqcsp;
 
-    public Server() {
-    }
-
-    public Server(String qcfJndi) {
-        this.qcfJndi = qcfJndi;
-    }
 
     public Server(String host, Integer port, String channel, String queueManagerName, boolean mqcsp) {
         this.host = host;
@@ -49,14 +44,5 @@ public class Server implements Serializable {
     public String toString() {
         return "host=" + this.host + (this.port != null ? ":" + this.port : "") + ", channel=" + this.channel + ", manager=" + this.queueManagerName;
     }
-
-    public String getName() {
-        return this.queueManagerName + " " + this.host + (this.port != null ? " " + this.port : "") + " " + this.channel;
-    }
-
-    public boolean isAutodiscover() {
-        return CollectionUtils.isEmpty(this.queues);
-    }
-
 
 }

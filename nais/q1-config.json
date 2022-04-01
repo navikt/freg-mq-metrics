@@ -9,7 +9,7 @@
   "FREG_MQ_METRICS_SECURE_CHANNEL_NAME": "Q1_FREG_MQ_SECURE",
   "SRVFREGMQMETRICS": "/serviceuser/data/dev/srvfregmqmetrics",
   "SRVMQINQUIRE": "/serviceuser/data/dev/srvmqinquire",
-  "NAMESPACE": "q1",
+  "APP_NAME": "freg-mq-metrics-q1",
   "INGRESSES": [
     "https://freg-mq-metrics-q1.nais.preprod.local"
   ]
