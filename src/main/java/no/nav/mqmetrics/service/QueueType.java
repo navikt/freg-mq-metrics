@@ -8,9 +8,9 @@ public enum QueueType {
     MODEL(2),
     UNKNOWN(-1);
 
-    private int type;
+    private final int type;
 
-    private QueueType(int type) {
+    QueueType(int type) {
         this.type = type;
     }
 
@@ -18,22 +18,4 @@ public enum QueueType {
         return queueType.type;
     }
 
-    public static QueueType getQueueType(int type) {
-        switch(type) {
-            case 1:
-                return LOCAL;
-            case 2:
-                return MODEL;
-            case 3:
-                return ALIAS;
-            case 4:
-            case 5:
-            default:
-                return UNKNOWN;
-            case 6:
-                return REMOTE;
-            case 7:
-                return CLUSTER;
-        }
-    }
 }

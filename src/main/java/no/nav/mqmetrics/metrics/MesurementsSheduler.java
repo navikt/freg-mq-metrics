@@ -30,7 +30,7 @@ public class MesurementsSheduler implements InitializingBean {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         schedulerTimer = Timer.builder("freg.mq.metrics.timed")
                 .tag("operation", "updateMesurementsSheduler")
                 .publishPercentiles(.25, .50, .75, .90, 1.0)
