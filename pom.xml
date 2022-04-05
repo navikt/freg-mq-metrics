@@ -21,7 +21,8 @@
         <guava.version>31.1-jre</guava.version>
         <io-micrometer.version>1.8.4</io-micrometer.version>
 
-        <!-- 9.2.2.0 har MQCSP skrudd på som standard - fører til at en ikke får metrikker fra (gammel) broker MPLSC01 -->
+        <!-- Versjon 9.2.0.5 (og potensielt lavere versjoner også) gir problem med å få metrikker fra (gammel) broker MPLSC01 grunnet MQCSP -
+            kan heller oppgradere til nyeste versjon når gammel broker er faset ut -->
         <wmq.version>9.2.0.1</wmq.version>
     </properties>
 
