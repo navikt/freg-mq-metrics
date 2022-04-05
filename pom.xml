@@ -22,7 +22,7 @@
         <io-micrometer.version>1.8.4</io-micrometer.version>
 
         <!-- 9.2.2.0 har MQCSP skrudd på som standard - fører til at en ikke får metrikker fra (gammel) broker MPLSC01 -->
-        <wmq.version>9.2.0.1</wmq.version>
+        <wmq.version>9.2.1.0</wmq.version>
     </properties>
 
     <dependencies>
