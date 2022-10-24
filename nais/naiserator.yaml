@@ -7,7 +7,6 @@ metadata:
     team: teamdokumenthandtering
 spec:
   env:
-
     - name: FREG_MQ_METRICS_SECURE_QUEUEMANAGER
       value: {{ FREG_MQ_METRICS_SECURE_QUEUEMANAGER }}
     - name: FREG_MQ_METRICS_SECURE_CHANNEL_NAME
@@ -19,7 +18,7 @@ spec:
       {{/each}}
   leaderElection: true
   liveness:
-    path: /actuator/health/liveness
+    path: /internal/isalive
     port: 8080
     initialDelay: 30
     failureThreshold: 10
@@ -28,7 +27,7 @@ spec:
     enabled: true
     path: /actuator/prometheus
   readiness:
-    path: /actuator/health/readiness
+    path: /internal/isready
     port: 8080
     initialDelay: 30
     timeout: 3
