@@ -14,11 +14,13 @@ import static java.time.Duration.ofSeconds;
 @Component
 public class MesurementsSheduler implements InitializingBean {
 
-    @Autowired
-    private MeasurementsService measurementsService;
+    private final MeasurementsService measurementsService;
+    private final MeterRegistry registry;
 
-    @Autowired
-    private MeterRegistry registry;
+    public MesurementsSheduler(MeasurementsService measurementsService, MeterRegistry registry) {
+        this.measurementsService = measurementsService;
+        this.registry = registry;
+    }
 
     private Timer schedulerTimer;
 

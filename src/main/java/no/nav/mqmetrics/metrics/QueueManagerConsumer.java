@@ -26,12 +26,13 @@ import static no.nav.mqmetrics.service.QueueType.ALIAS;
 @Component
 public class QueueManagerConsumer {
 
-    @Autowired
-    private MQService mqService;
+    private final MQService mqService;
+    private final ServiceuserProperties serviceuserProperties;
 
-    @Autowired
-    private ServiceuserProperties serviceuserProperties;
-
+    public QueueManagerConsumer(MQService mqService, ServiceuserProperties serviceuserProperties) {
+        this.mqService = mqService;
+        this.serviceuserProperties = serviceuserProperties;
+    }
 
     public Map<String, Integer> getQueueDepths(MqChannel channel) {
 
