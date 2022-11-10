@@ -27,12 +27,15 @@ public class MeasurementsService {
     //consider concurrent access
     private final Map<QueueAndManager, AtomicInteger> queueDepths = new HashMap<>();
 
-    @Autowired
-    private MqProperties mqProperties;
-    @Autowired
-    private QueueManagerConsumer prober;
-    @Autowired
-    private MeterRegistry registry;
+    private final MqProperties mqProperties;
+    private final QueueManagerConsumer prober;
+    private final MeterRegistry registry;
+
+    public MeasurementsService(MqProperties mqProperties, QueueManagerConsumer prober, MeterRegistry registry) {
+        this.mqProperties = mqProperties;
+        this.prober = prober;
+        this.registry = registry;
+    }
 
     public void updateMeasurements() {
         for (MqChannel channel : mqProperties.getChannels().values()) {
