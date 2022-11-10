@@ -18,7 +18,7 @@ spec:
       {{/each}}
   leaderElection: true
   liveness:
-    path: /internal/isalive
+    path: /actuator/health/liveness
     port: 8080
     initialDelay: 30
     failureThreshold: 10
@@ -27,7 +27,7 @@ spec:
     enabled: true
     path: /actuator/prometheus
   readiness:
-    path: /internal/isready
+    path: /actuator/health/readiness
     port: 8080
     initialDelay: 30
     timeout: 3

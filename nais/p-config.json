@@ -1,10 +1,10 @@
 {
-  "FREG_MQ_METRICS_SECURE_QUEUEMANAGER": "mq://a01apvl247.adeo.no:1414/MPLS01",
-  "FREG_MQ_METRICS_SECURE_CHANNEL_NAME": "P_FREG_MQ_SECURE",
-  "SRVFREGMQMETRICS": "/serviceuser/data/prod/srvfregmqmetrics",
-  "SRVMQINQUIRE": "/serviceuser/data/prod/srvmqinquire",
   "APP_NAME": "freg-mq-metrics",
   "INGRESSES": [
     "https://freg-mq-metrics.nais.adeo.no"
-  ]
+  ],
+  "FREG_MQ_METRICS_SECURE_QUEUEMANAGER": "mq://a01apvl247.adeo.no:1414/MPLS01",
+  "FREG_MQ_METRICS_SECURE_CHANNEL_NAME": "P_FREG_MQ_SECURE",
+  "SRVFREGMQMETRICS": "/serviceuser/data/prod/srvfregmqmetrics",
+  "SRVMQINQUIRE": "/serviceuser/data/prod/srvmqinquire"
 }
