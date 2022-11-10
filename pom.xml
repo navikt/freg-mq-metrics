@@ -19,7 +19,7 @@
 
         <logstash.logback.encoder.version>7.2</logstash.logback.encoder.version>
         <guava.version>31.1-jre</guava.version>
-        <wmq.version>9.3.1.0</wmq.version>
+        <wmq.version>9.3.0.0</wmq.version>
 
         <!-- Plugins -->
         <maven-toolchains-plugin.version>3.1.0</maven-toolchains-plugin.version>
