@@ -1,12 +1,11 @@
 package no.nav.mqmetrics.config;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
-
-import javax.validation.constraints.NotEmpty;
 
 @Getter
 @Setter
@@ -15,10 +14,10 @@ import javax.validation.constraints.NotEmpty;
 @Validated
 public class MqAdminProperties {
 
-    @NotEmpty
-    private String username;
+	@NotEmpty
+	private String username;
 
-    @NotEmpty
-    @ToString.Exclude
-    private String password;
+	@NotEmpty
+	@ToString.Exclude
+	private String password;
 }
