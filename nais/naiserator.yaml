@@ -12,6 +12,7 @@ spec:
     - name: FREG_MQ_METRICS_SECURE_CHANNEL_NAME
       value: {{ FREG_MQ_METRICS_SECURE_CHANNEL_NAME }}
   image: {{ image }}
+  port: 8080
   ingresses:
     - {{ INGRESS }}
   liveness:
@@ -22,7 +23,6 @@ spec:
     path: /actuator/health/readiness
     initialDelay: 20
     timeout: 3
-  port: 8080
   prometheus:
     enabled: true
     path: /actuator/prometheus
