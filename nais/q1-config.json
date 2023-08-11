@@ -1,8 +1,6 @@
 {
   "APP_NAME": "freg-mq-metrics-q1",
-  "INGRESSES": [
-    "https://freg-mq-metrics-q1.dev.intern.nav.no"
-  ],
+  "INGRESS": "https://freg-mq-metrics-q1.dev.intern.nav.no",
   "FREG_MQ_METRICS_SECURE_QUEUEMANAGER": "mq://b27apvl219.preprod.local:1413/MQLS01",
   "FREG_MQ_METRICS_SECURE_CHANNEL_NAME": "Q1_FREG_MQ_SECURE",
   "SRVFREGMQMETRICS": "/serviceuser/data/dev/srvfregmqmetrics",
