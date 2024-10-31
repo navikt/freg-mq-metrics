@@ -41,6 +41,7 @@ public class Server implements Serializable {
         this.mqcsp = mqcsp;
     }
 
+    @Override
     public String toString() {
         return "host=" + this.host + (this.port != null ? ":" + this.port : "") + ", channel=" + this.channel + ", manager=" + this.queueManagerName;
     }
