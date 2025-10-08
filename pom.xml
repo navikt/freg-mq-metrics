@@ -17,7 +17,7 @@
         <java.version>21</java.version>
 
         <logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
-        <guava.version>33.3.1-jre</guava.version>
+        <guava.version>33.5.0-jre</guava.version>
         <wmq.version>9.4.3.1</wmq.version>
 
         <!-- Plugins -->
