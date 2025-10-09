@@ -42,3 +42,8 @@ spec:
       memory: 256Mi
     limits:
       memory: 512Mi
+  observability:
+    logging:
+      destinations:
+        - id: elastic
+        - id: loki
