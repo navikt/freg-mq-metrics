@@ -6,6 +6,8 @@ metadata:
   labels:
     team: teamdokumenthandtering
 spec:
+  envFrom:
+    - secret: freg-mq-metrics
   env:
     - name: FREG_MQ_METRICS_SECURE_QUEUEMANAGER
       value: {{ FREG_MQ_METRICS_SECURE_QUEUEMANAGER }}
@@ -26,13 +28,6 @@ spec:
   prometheus:
     enabled: true
     path: /actuator/prometheus
-  vault:
-    enabled: true
-    paths:
-      - kvPath: {{ SRVFREGMQMETRICS }}
-        mountPath: "/secrets/serviceuser/srvfregmqmetrics"
-      - kvPath: {{ SRVMQINQUIRE }}
-        mountPath: "/secrets/serviceuser/srvmqinquire"
   replicas:
     min: 1
     max: 1
