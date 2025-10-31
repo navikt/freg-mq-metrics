@@ -9,6 +9,12 @@ spec:
   envFrom:
     - secret: freg-mq-metrics
   env:
+    - name: JAVA_TRUSTSTORE_OPTIONS
+      value: "-Djavax.net.ssl.trustStore=$(NAV_TRUSTSTORE_PATH)
+              -Djavax.net.ssl.trustStorePassword=$(NAV_TRUSTSTORE_PASSWORD)"
+    - name: JDK_JAVA_OPTIONS
+      value: "-XX:MaxRAMPercentage=75
+              $(JAVA_TRUSTSTORE_OPTIONS)"
     - name: FREG_MQ_METRICS_SECURE_QUEUEMANAGER
       value: {{ FREG_MQ_METRICS_SECURE_QUEUEMANAGER }}
     - name: FREG_MQ_METRICS_SECURE_CHANNEL_NAME
