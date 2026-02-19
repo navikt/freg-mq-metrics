@@ -1,7 +1,6 @@
 package no.nav.mqmetrics.service;
 
 import com.ibm.mq.MQException;
-import com.ibm.mq.MQQueue;
 import com.ibm.mq.MQQueueManager;
 import com.ibm.mq.constants.MQConstants;
 import com.ibm.mq.headers.MQDataException;
@@ -31,105 +30,91 @@ import static com.ibm.mq.constants.CMQCFC.MQCMD_INQUIRE_Q_STATUS;
 @Component
 public class MQService {
 
-    private static final int UTF_8_WITH_PUA = 1208;
+	private static final int UTF_8_WITH_PUA = 1208;
 
-    public MQService() {
-    }
+	public MQService() {
+	}
 
-    @SuppressWarnings(
-            value = {"REC_CATCH_EXCEPTION"}
-    )
-    public List<DokQueueStatus> getSecureQueueDetails(Server server, int type) {
-        PCFMessageAgent agent = null;
-        PCFMessage request = new PCFMessage(MQCMD_INQUIRE_Q_STATUS);
-        request.addParameter(MQCA_Q_NAME, "*");
-        request.addParameter(MQIA_Q_TYPE, type);
-        List<DokQueueStatus> queueStatus = new ArrayList<>();
-        MQQueueManager queueManager = null;
+	@SuppressWarnings(
+			value = {"REC_CATCH_EXCEPTION"}
+	)
+	public List<DokQueueStatus> getSecureQueueDetails(Server server, int type) {
+		PCFMessageAgent agent = null;
+		PCFMessage request = new PCFMessage(MQCMD_INQUIRE_Q_STATUS);
+		request.addParameter(MQCA_Q_NAME, "*");
+		request.addParameter(MQIA_Q_TYPE, type);
+		List<DokQueueStatus> queueStatus = new ArrayList<>();
+		MQQueueManager queueManager = null;
 
+		try {
+			queueManager = this.getQueueManager(server);
+			agent = new PCFMessageAgent(queueManager);
+			PCFMessage[] responses = agent.send(request);
 
-        try {
-            queueManager = this.getQueueManager(server);
-            agent = new PCFMessageAgent(queueManager);
-            PCFMessage[] responses = agent.send(request);
+			queueStatus = Arrays.stream(responses).filter(Objects::nonNull)
+					.filter(pcfMessage -> !Pattern.matches("^SYSTEM.*$", String.valueOf(pcfMessage.getParameterValue(MQCA_Q_NAME)).trim()))
+					.filter(pcfMessage -> !Pattern.matches("^AMK.*$", String.valueOf(pcfMessage.getParameterValue(MQCA_Q_NAME)).trim()))
+					.filter(pcfMessage -> !Pattern.matches("^AMQ.*$", String.valueOf(pcfMessage.getParameterValue(MQCA_Q_NAME)).trim()))
+					.map(pcfMessage ->
+							DokQueueStatus.builder().queueName(String.valueOf(pcfMessage.getParameterValue(MQCA_Q_NAME)).trim())
+									.depth((Integer) pcfMessage.getParameterValue(MQIA_CURRENT_Q_DEPTH))
+									.build()
+					).collect(Collectors.toList());
 
-            queueStatus = Arrays.stream(responses).filter(Objects::nonNull)
-                    .filter(pcfMessage -> !Pattern.matches("^SYSTEM.*$", String.valueOf(pcfMessage.getParameterValue(MQCA_Q_NAME)).trim()))
-                    .filter(pcfMessage -> !Pattern.matches("^AMK.*$", String.valueOf(pcfMessage.getParameterValue(MQCA_Q_NAME)).trim()))
-                    .filter(pcfMessage -> !Pattern.matches("^AMQ.*$", String.valueOf(pcfMessage.getParameterValue(MQCA_Q_NAME)).trim()))
-                    .map(pcfMessage ->
-                            DokQueueStatus.builder().queueName(String.valueOf(pcfMessage.getParameterValue(MQCA_Q_NAME)).trim())
-                                    .depth((Integer) pcfMessage.getParameterValue(MQIA_CURRENT_Q_DEPTH))
-                                    .build()
-                    ).collect(Collectors.toList());
+		} catch (MQDataException e) {
+			log.info("Feilet å autodiscover køer i queuemanager={} av type={}, Reason:{} ", server.getQueueManagerName(), type, e.reasonCode, e);
+		} catch (MQException e) {
+			log.info("Feilet å liste kødetaljer i queuemanager={} av type={}, Reason:{} ", server.getQueueManagerName(), type, e.reasonCode, e);
+		} catch (IOException e) {
+			log.info("Feilet å liste kødetaljer fra queuemanager={} av type={}", server.getQueueManagerName(), type, e);
+		} finally {
+			closeQuietly(agent);
+			closeQuietly(queueManager);
+		}
+		return queueStatus;
+	}
 
-        } catch (MQDataException var14) {
-            log.info("Feilet til autodiscover køer i queuemanager={} av type {} , Reason:{} ", server.getQueueManagerName(), type, var14.reasonCode);
-        } catch (IOException | MQException e) {
-            log.info("Feilet til å liste kødetaljer fra queuemanager={} av type {} , Reason:{} ", server.getQueueManagerName(), type, e.getCause());
-        } finally {
-            closeQuietly(agent);
-            closeQuietly(queueManager);
-        }
-        return queueStatus;
-    }
-
-    private void closeQuietly(PCFMessageAgent agent) {
-        if (agent != null) {
-            try {
-                agent.disconnect();
-            } catch (MQDataException var3) {
-                log.error("failed to disconnect agent", var3);
-            }
-        }
-
-    }
-
-
-    private void closeQuietly(MQQueueManager queueManager) {
-        if (queueManager != null) {
-            try {
-                queueManager.disconnect();
-            } catch (MQException var4) {
-                log.warn("MQException while disconnecting queueManager", var4);
-            }
-
-            try {
-                queueManager.close();
-            } catch (MQException var3) {
-                log.warn("MQException while closing queueManager", var3);
-            }
-        }
-
-    }
-
-    private void closeQuietly(MQQueue queue) {
-        if (queue != null) {
-            try {
-                queue.close();
-            } catch (MQException var3) {
-                log.warn("MQException while closing queue", var3);
-            }
-        }
-
-    }
+	private void closeQuietly(PCFMessageAgent agent) {
+		if (agent != null) {
+			try {
+				agent.disconnect();
+			} catch (MQDataException var3) {
+				log.error("failed to disconnect agent", var3);
+			}
+		}
+	}
 
 
-    private MQQueueManager getQueueManager(Server server) throws MQException {
-        Hashtable<String, Object> properties = new Hashtable<>();
-        properties.put(PORT_PROPERTY, server.getPort());
-        properties.put(MQConstants.HOST_NAME_PROPERTY, server.getHost());
-        properties.put(MQConstants.CHANNEL_PROPERTY, server.getChannel());
-        properties.put(MQConstants.MQPSC_Q_MGR_NAME, server.getQueueManagerName());
-        properties.put(MQConstants.CCSID_PROPERTY,UTF_8_WITH_PUA);
-        if (MQUtil.isSecureMqBroker(server)) {
-            properties.put(MQConstants.USE_MQCSP_AUTHENTICATION_PROPERTY, true);
-        }
-        properties.put(USER_ID_PROPERTY, server.getUser());
-        properties.put(PASSWORD_PROPERTY, server.getPassword());
+	private void closeQuietly(MQQueueManager queueManager) {
+		if (queueManager != null) {
+			try {
+				queueManager.disconnect();
+			} catch (MQException var4) {
+				log.warn("MQException while disconnecting queueManager", var4);
+			}
 
-        return new MQQueueManager(server.getQueueManagerName(), properties);
-    }
+			try {
+				queueManager.close();
+			} catch (MQException var3) {
+				log.warn("MQException while closing queueManager", var3);
+			}
+		}
+	}
+
+
+	private MQQueueManager getQueueManager(Server server) throws MQException {
+		Hashtable<String, Object> properties = new Hashtable<>();
+		properties.put(PORT_PROPERTY, server.getPort());
+		properties.put(MQConstants.HOST_NAME_PROPERTY, server.getHost());
+		properties.put(MQConstants.CHANNEL_PROPERTY, server.getChannel());
+		properties.put(MQConstants.MQPSC_Q_MGR_NAME, server.getQueueManagerName());
+		properties.put(MQConstants.CCSID_PROPERTY, UTF_8_WITH_PUA);
+		properties.put(MQConstants.USE_MQCSP_AUTHENTICATION_PROPERTY, true);
+		properties.put(USER_ID_PROPERTY, server.getUser());
+		properties.put(PASSWORD_PROPERTY, server.getPassword());
+
+		return new MQQueueManager(server.getQueueManagerName(), properties);
+	}
 
 
 }
