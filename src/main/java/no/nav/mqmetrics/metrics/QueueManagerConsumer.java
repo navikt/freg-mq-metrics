@@ -3,13 +3,12 @@ package no.nav.mqmetrics.metrics;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.mqmetrics.config.ServiceuserProperties;
 import no.nav.mqmetrics.exception.MQRuntimeException;
-import no.nav.mqmetrics.metrics.MqProperties.MqChannel;
+import no.nav.mqmetrics.config.MqProperties.MqChannel;
 import no.nav.mqmetrics.service.DokQueueStatus;
 import no.nav.mqmetrics.service.MQService;
 import no.nav.mqmetrics.service.MQUtil;
 import no.nav.mqmetrics.service.QueueType;
 import no.nav.mqmetrics.service.Server;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;

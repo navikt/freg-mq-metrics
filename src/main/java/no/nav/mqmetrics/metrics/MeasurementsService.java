@@ -6,8 +6,8 @@ import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.mqmetrics.metrics.MqProperties.MqChannel;
-import org.springframework.beans.factory.annotation.Autowired;
+import no.nav.mqmetrics.config.MqProperties;
+import no.nav.mqmetrics.config.MqProperties.MqChannel;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;

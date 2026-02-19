@@ -1,4 +1,4 @@
-package no.nav.mqmetrics.metrics;
+package no.nav.mqmetrics.config;
 
 import lombok.Data;
 import lombok.Getter;

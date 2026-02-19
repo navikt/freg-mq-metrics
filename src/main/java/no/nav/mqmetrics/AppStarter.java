@@ -2,7 +2,7 @@ package no.nav.mqmetrics;
 
 import no.nav.mqmetrics.config.MqAdminProperties;
 import no.nav.mqmetrics.config.ServiceuserProperties;
-import no.nav.mqmetrics.metrics.MqProperties;
+import no.nav.mqmetrics.config.MqProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
