@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<included>
+	<include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
 	<appender name="stdout_json" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
 	</appender>
@@ -11,5 +13,6 @@
 	<logger name="no.nav.mqmetrics" level="INFO" additivity="false">
 		<appender-ref ref="stdout_json"/>
 	</logger>
+
 	<logger name="org.springframework" level="INFO"/>
-</configuration>
+</included>
