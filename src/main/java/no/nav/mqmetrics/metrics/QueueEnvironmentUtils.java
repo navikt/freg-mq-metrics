@@ -6,8 +6,9 @@ import java.util.Arrays;
 
 @UtilityClass
 public class QueueEnvironmentUtils {
-    public static String stripEnvironmentNameFrom(String input) {
-        String first = input.replaceFirst("QA.", "");
+
+    public static String extractEnvironmentNameFromQueueName(String queueName) {
+        String first = queueName.replaceFirst("QA.", "");
 
         if (first.startsWith("P")) return "P";
 

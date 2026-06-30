@@ -19,7 +19,7 @@ import static no.nav.mqmetrics.metrics.MetricsUtils.channelNameTag;
 import static no.nav.mqmetrics.metrics.MetricsUtils.nameTag;
 import static no.nav.mqmetrics.metrics.MetricsUtils.queueManagerTag;
 import static no.nav.mqmetrics.metrics.MetricsUtils.tags;
-import static no.nav.mqmetrics.metrics.QueueEnvironmentUtils.stripEnvironmentNameFrom;
+import static no.nav.mqmetrics.metrics.QueueEnvironmentUtils.extractEnvironmentNameFromQueueName;
 
 @Slf4j
 @Service
@@ -90,7 +90,7 @@ public class MeasurementsService {
     }
 
     public static Tag environmentTag(String queueName) {
-        return Tag.of("environment", stripEnvironmentNameFrom(queueName));
+        return Tag.of("environment", extractEnvironmentNameFromQueueName(queueName));
     }
 
 
