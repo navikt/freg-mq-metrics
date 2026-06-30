@@ -55,8 +55,8 @@ public class MeasurementsService {
         Map<QueueAndManager, MapDifference.ValueDifference<AtomicInteger>> updatedQueues = difference.entriesDiffering();
         log.debug("Updated queues {}, New queues {}, missing/removed {}", updatedQueues.size(), newQueues.size(), missingQueues.size());
 
-        updatedQueues.forEach((queueAndManager, diff) -> diff.leftValue().set(diff.rightValue().intValue()));
-        missingQueues.forEach((queueAndManager, value) -> value.set(-1));
+        updatedQueues.forEach((_, diff) -> diff.leftValue().set(diff.rightValue().intValue()));
+        missingQueues.forEach((_, value) -> value.set(-1));
         newQueues.forEach((queueAndManager, depth) -> {
             try {
                 Gauge.builder("queue.depth", (depth), AtomicInteger::get)
@@ -72,21 +72,19 @@ public class MeasurementsService {
                 this.queueDepths.put(queueAndManager, (depth));
 
             } catch (Exception e) {
-                log.warn("Something went wrong trying to update depth of queue '" + queueAndManager + "'.", e);
+				log.warn("Something went wrong trying to update depth of queue '{}'.", queueAndManager, e);
             }
         });
     }
 
     public Map<QueueAndManager, AtomicInteger> mapToQueueAndManagerMap(String queueManagerName, Map<String, Integer> probedDepths) {
-        return probedDepths
-                .entrySet().stream()
+        return probedDepths.entrySet().stream()
                 .filter(e -> 0 <= e.getValue())
                 .collect(toMap(e -> new QueueAndManager(e.getKey(), queueManagerName), e -> new AtomicInteger(e.getValue())));
     }
 
     public Map<QueueAndManager, AtomicInteger> getCachedQueuesForManager(String queueManagerName) {
-        return this.queueDepths.entrySet()
-                .stream()
+        return queueDepths.entrySet().stream()
                 .filter(entry -> entry.getKey().getManager().equals(queueManagerName))
                 .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
