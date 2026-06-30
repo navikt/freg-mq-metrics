@@ -57,6 +57,7 @@ public class MeasurementsService {
 
         updatedQueues.forEach((_, diff) -> diff.leftValue().set(diff.rightValue().intValue()));
         missingQueues.forEach((_, value) -> value.set(-1));
+
         newQueues.forEach((queueAndManager, depth) -> {
             try {
                 Gauge.builder("queue.depth", (depth), AtomicInteger::get)
@@ -69,7 +70,7 @@ public class MeasurementsService {
                                         environmentTag(queueAndManager.getQueue())
                                 ))
                         .register(registry);
-                this.queueDepths.put(queueAndManager, (depth));
+                queueDepths.put(queueAndManager, (depth));
 
             } catch (Exception e) {
 				log.warn("Something went wrong trying to update depth of queue '{}'.", queueAndManager, e);
@@ -92,6 +93,5 @@ public class MeasurementsService {
     public static Tag environmentTag(String queueName) {
         return Tag.of("environment", extractEnvironmentNameFromQueueName(queueName));
     }
-
 
 }

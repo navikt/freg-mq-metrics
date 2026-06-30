@@ -15,8 +15,6 @@ import java.util.Collection;
 public class Server implements Serializable {
     @Serial
     private static final long serialVersionUID = 6429024078737806983L;
-    private static final String NOT_RESOLVED_FROM_JNDI = "NOT_RESOLVED_FROM_JNDI";
-    private static final int UTF_8_WITH_PUA = 1208;
 
     private String host;
     private Integer port;
@@ -31,7 +29,6 @@ public class Server implements Serializable {
     @SuppressWarnings({"SE_TRANSIENT_FIELD_NOT_RESTORED"})
     private transient String aliasPrefix;
     private boolean mqcsp;
-
 
     public Server(String host, Integer port, String channel, String queueManagerName, boolean mqcsp) {
         this.host = host;
