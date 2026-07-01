@@ -13,7 +13,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableConfigurationProperties({MqProperties.class, MqAdminProperties.class, ServiceuserProperties.class})
 public class AppStarter {
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         SpringApplication.run(AppStarter.class, args);
     }
 }

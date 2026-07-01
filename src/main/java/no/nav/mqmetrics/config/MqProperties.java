@@ -15,6 +15,7 @@ import static java.util.stream.Collectors.toList;
 @Getter
 @ConfigurationProperties(prefix = "mqmetrics")
 public class MqProperties {
+
     private final Map<String, MqChannel> channels = new HashMap<>();
 
     @Data
@@ -23,27 +24,27 @@ public class MqProperties {
         private String channelName;
         private List<String> queueNames = new ArrayList<>();
 
-        public static String ensureQueueAlias(String queueName) {
-            if (queueName.startsWith("QA.")) return queueName;
-            else return ("QA." + queueName);
-        }
-
         public String getQueueManagerName() {
-            return this.managerUri.getPath().replace("/", "");
+            return managerUri.getPath().replace("/", "");
         }
 
         public int getQueueManagerPort() {
-            return this.managerUri.getPort();
+            return managerUri.getPort();
         }
 
         public String getQueueManagerHost() {
-            return this.managerUri.getHost();
+            return managerUri.getHost();
         }
 
         public List<String> getQueueNames() {
             return queueNames.stream()
                     .map(MqChannel::ensureQueueAlias)
                     .collect(toList());
+        }
+
+        public static String ensureQueueAlias(String queueName) {
+            if (queueName.startsWith("QA.")) return queueName;
+            else return ("QA." + queueName);
         }
     }
 }

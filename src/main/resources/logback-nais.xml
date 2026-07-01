@@ -13,6 +13,4 @@
 	<logger name="no.nav.mqmetrics" level="INFO" additivity="false">
 		<appender-ref ref="stdout_json"/>
 	</logger>
-
-	<logger name="org.springframework" level="INFO"/>
 </included>

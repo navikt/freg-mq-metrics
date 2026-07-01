@@ -2,7 +2,6 @@ package no.nav.mqmetrics.service;
 
 import com.ibm.mq.MQException;
 import com.ibm.mq.MQQueueManager;
-import com.ibm.mq.constants.MQConstants;
 import com.ibm.mq.headers.MQDataException;
 import com.ibm.mq.headers.pcf.PCFMessage;
 import com.ibm.mq.headers.pcf.PCFMessageAgent;
@@ -18,13 +17,18 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.ibm.mq.constants.CMQC.CCSID_PROPERTY;
+import static com.ibm.mq.constants.CMQC.CHANNEL_PROPERTY;
+import static com.ibm.mq.constants.CMQC.HOST_NAME_PROPERTY;
 import static com.ibm.mq.constants.CMQC.MQCA_Q_NAME;
 import static com.ibm.mq.constants.CMQC.MQIA_CURRENT_Q_DEPTH;
 import static com.ibm.mq.constants.CMQC.MQIA_Q_TYPE;
 import static com.ibm.mq.constants.CMQC.PASSWORD_PROPERTY;
 import static com.ibm.mq.constants.CMQC.PORT_PROPERTY;
 import static com.ibm.mq.constants.CMQC.USER_ID_PROPERTY;
+import static com.ibm.mq.constants.CMQC.USE_MQCSP_AUTHENTICATION_PROPERTY;
 import static com.ibm.mq.constants.CMQCFC.MQCMD_INQUIRE_Q_STATUS;
+import static com.ibm.mq.constants.CMQPSC.MQPSC_Q_MGR_NAME;
 
 @Slf4j
 @Component
@@ -47,7 +51,7 @@ public class MQService {
 		MQQueueManager queueManager = null;
 
 		try {
-			queueManager = this.getQueueManager(server);
+			queueManager = getQueueManager(server);
 			agent = new PCFMessageAgent(queueManager);
 			PCFMessage[] responses = agent.send(request);
 
@@ -56,7 +60,8 @@ public class MQService {
 					.filter(pcfMessage -> !Pattern.matches("^AMK.*$", String.valueOf(pcfMessage.getParameterValue(MQCA_Q_NAME)).trim()))
 					.filter(pcfMessage -> !Pattern.matches("^AMQ.*$", String.valueOf(pcfMessage.getParameterValue(MQCA_Q_NAME)).trim()))
 					.map(pcfMessage ->
-							DokQueueStatus.builder().queueName(String.valueOf(pcfMessage.getParameterValue(MQCA_Q_NAME)).trim())
+							DokQueueStatus.builder()
+									.queueName(String.valueOf(pcfMessage.getParameterValue(MQCA_Q_NAME)).trim())
 									.depth((Integer) pcfMessage.getParameterValue(MQIA_CURRENT_Q_DEPTH))
 									.build()
 					).collect(Collectors.toList());
@@ -84,7 +89,6 @@ public class MQService {
 		}
 	}
 
-
 	private void closeQuietly(MQQueueManager queueManager) {
 		if (queueManager != null) {
 			try {
@@ -101,20 +105,18 @@ public class MQService {
 		}
 	}
 
-
 	private MQQueueManager getQueueManager(Server server) throws MQException {
 		Hashtable<String, Object> properties = new Hashtable<>();
 		properties.put(PORT_PROPERTY, server.getPort());
-		properties.put(MQConstants.HOST_NAME_PROPERTY, server.getHost());
-		properties.put(MQConstants.CHANNEL_PROPERTY, server.getChannel());
-		properties.put(MQConstants.MQPSC_Q_MGR_NAME, server.getQueueManagerName());
-		properties.put(MQConstants.CCSID_PROPERTY, UTF_8_WITH_PUA);
-		properties.put(MQConstants.USE_MQCSP_AUTHENTICATION_PROPERTY, true);
+		properties.put(HOST_NAME_PROPERTY, server.getHost());
+		properties.put(CHANNEL_PROPERTY, server.getChannel());
+		properties.put(MQPSC_Q_MGR_NAME, server.getQueueManagerName());
+		properties.put(CCSID_PROPERTY, UTF_8_WITH_PUA);
+		properties.put(USE_MQCSP_AUTHENTICATION_PROPERTY, true);
 		properties.put(USER_ID_PROPERTY, server.getUser());
 		properties.put(PASSWORD_PROPERTY, server.getPassword());
 
 		return new MQQueueManager(server.getQueueManagerName(), properties);
 	}
-
 
 }

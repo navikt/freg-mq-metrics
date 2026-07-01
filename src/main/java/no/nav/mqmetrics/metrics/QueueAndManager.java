@@ -6,5 +6,6 @@ import lombok.Value;
 @Value
 @Builder
 public class QueueAndManager {
-    String queue, manager;
+    String queue;
+    String manager;
 }

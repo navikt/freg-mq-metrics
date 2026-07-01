@@ -19,7 +19,7 @@ import static no.nav.mqmetrics.metrics.MetricsUtils.channelNameTag;
 import static no.nav.mqmetrics.metrics.MetricsUtils.nameTag;
 import static no.nav.mqmetrics.metrics.MetricsUtils.queueManagerTag;
 import static no.nav.mqmetrics.metrics.MetricsUtils.tags;
-import static no.nav.mqmetrics.metrics.QueueEnvironmentUtils.stripEnvironmentNameFrom;
+import static no.nav.mqmetrics.metrics.QueueEnvironmentUtils.extractEnvironmentNameFromQueueName;
 
 @Slf4j
 @Service
@@ -55,8 +55,9 @@ public class MeasurementsService {
         Map<QueueAndManager, MapDifference.ValueDifference<AtomicInteger>> updatedQueues = difference.entriesDiffering();
         log.debug("Updated queues {}, New queues {}, missing/removed {}", updatedQueues.size(), newQueues.size(), missingQueues.size());
 
-        updatedQueues.forEach((queueAndManager, diff) -> diff.leftValue().set(diff.rightValue().intValue()));
-        missingQueues.forEach((queueAndManager, value) -> value.set(-1));
+        updatedQueues.forEach((_, diff) -> diff.leftValue().set(diff.rightValue().intValue()));
+        missingQueues.forEach((_, value) -> value.set(-1));
+
         newQueues.forEach((queueAndManager, depth) -> {
             try {
                 Gauge.builder("queue.depth", (depth), AtomicInteger::get)
@@ -69,31 +70,28 @@ public class MeasurementsService {
                                         environmentTag(queueAndManager.getQueue())
                                 ))
                         .register(registry);
-                this.queueDepths.put(queueAndManager, (depth));
+                queueDepths.put(queueAndManager, (depth));
 
             } catch (Exception e) {
-                log.warn("Something went wrong trying to update depth of queue '" + queueAndManager + "'.", e);
+				log.warn("Something went wrong trying to update depth of queue '{}'.", queueAndManager, e);
             }
         });
     }
 
     public Map<QueueAndManager, AtomicInteger> mapToQueueAndManagerMap(String queueManagerName, Map<String, Integer> probedDepths) {
-        return probedDepths
-                .entrySet().stream()
+        return probedDepths.entrySet().stream()
                 .filter(e -> 0 <= e.getValue())
                 .collect(toMap(e -> new QueueAndManager(e.getKey(), queueManagerName), e -> new AtomicInteger(e.getValue())));
     }
 
     public Map<QueueAndManager, AtomicInteger> getCachedQueuesForManager(String queueManagerName) {
-        return this.queueDepths.entrySet()
-                .stream()
+        return queueDepths.entrySet().stream()
                 .filter(entry -> entry.getKey().getManager().equals(queueManagerName))
                 .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     public static Tag environmentTag(String queueName) {
-        return Tag.of("environment", stripEnvironmentNameFrom(queueName));
+        return Tag.of("environment", extractEnvironmentNameFromQueueName(queueName));
     }
-
 
 }
