@@ -55,7 +55,8 @@ public class MQService {
 			agent = new PCFMessageAgent(queueManager);
 			PCFMessage[] responses = agent.send(request);
 
-			queueStatus = Arrays.stream(responses).filter(Objects::nonNull)
+			queueStatus = Arrays.stream(responses)
+					.filter(Objects::nonNull)
 					.filter(pcfMessage -> !Pattern.matches("^SYSTEM.*$", String.valueOf(pcfMessage.getParameterValue(MQCA_Q_NAME)).trim()))
 					.filter(pcfMessage -> !Pattern.matches("^AMK.*$", String.valueOf(pcfMessage.getParameterValue(MQCA_Q_NAME)).trim()))
 					.filter(pcfMessage -> !Pattern.matches("^AMQ.*$", String.valueOf(pcfMessage.getParameterValue(MQCA_Q_NAME)).trim()))
@@ -67,11 +68,11 @@ public class MQService {
 					).collect(Collectors.toList());
 
 		} catch (MQDataException e) {
-			log.info("Feilet å autodiscover køer i queuemanager={} av type={}, Reason:{} ", server.getQueueManagerName(), type, e.reasonCode, e);
+			log.error("Feilet å autodiscover køer i queuemanager={} av type={}, Reason:{} ", server.getQueueManagerName(), type, e.reasonCode, e);
 		} catch (MQException e) {
-			log.info("Feilet å liste kødetaljer i queuemanager={} av type={}, Reason:{} ", server.getQueueManagerName(), type, e.reasonCode, e);
+			log.error("Feilet å liste kødetaljer i queuemanager={} av type={}, Reason:{} ", server.getQueueManagerName(), type, e.reasonCode, e);
 		} catch (IOException e) {
-			log.info("Feilet å liste kødetaljer fra queuemanager={} av type={}", server.getQueueManagerName(), type, e);
+			log.error("Feilet å liste kødetaljer fra queuemanager={} av type={}", server.getQueueManagerName(), type, e);
 		} finally {
 			closeQuietly(agent);
 			closeQuietly(queueManager);
