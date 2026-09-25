@@ -18,7 +18,7 @@
 
         <logstash-logback-encoder.version>9.0</logstash-logback-encoder.version>
         <guava.version>33.7.1-jre</guava.version>
-        <com.ibm.mq.allclient.version>10.0.0.0</com.ibm.mq.allclient.version>
+        <com.ibm.mq.allclient.version>10.0.0.5</com.ibm.mq.allclient.version>
 
         <!-- Plugins -->
         <maven-toolchains-plugin.version>3.3.0</maven-toolchains-plugin.version>
